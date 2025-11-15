@@ -1,0 +1,63 @@
+@let products = productSignal.accountProductsState();
+
+<!-- 1) Primero verificar si el usuario puede vender -->
+@if (!canSell()) {
+
+    <!-- Usuario NO puede vender → no cargar productos, no mostrar lista -->
+
+    <!-- Mensaje explicativo -->
+    <!-- EJ: "Para vender productos primero debes completar los datos de tu cuenta." -->
+
+    <!-- Botón o enlace para completar datos de la cuenta -->
+    <!-- EJ: <a [routerLink]="['/account-details']">Completar datos</a> -->
+
+} @else {
+
+    <!-- Usuario SÍ puede vender → mostrar lista de productos -->
+
+    @if (products.loading) {
+
+        <!-- Mostrar mensaje o skeleton de “cargando productos…” -->
+
+    } @else if (products.error) {
+
+        <!-- Mostrar error general de carga de productos -->
+        <!-- EJ: "Error al obtener tus productos." -->
+        <!-- También podrías poner un botón de "Reintentar" -->
+
+    } @else if (!generate){
+
+        <!-- 2) Lista de productos publicados -->
+
+        <!-- Mostrar cada producto con:
+                - Datos básicos
+                - Inputs para actualizar precio/stock/descuento (PATCH) stock es agregado
+                - Mensaje products.updateError si falló
+                - Botón "Editar" para abrir edición completa
+        -->
+
+        <!-- EJEMPLO ESTRUCTURAL:
+        <div class="product-item" *for="let p of products.data">
+            Información del producto
+
+            Inputs o controles para actualizar campos individuales 
+
+            Mensaje de error de actualización (products.updateError)
+
+            Botón "Editar producto"
+        </div> -->
+
+        <!-- 3) Botón para agregar un nuevo producto -->
+
+        <!-- EJ: <button (click)="onGenerate()">Agregar producto</button> -->
+
+    }@else {
+        <!-- 4) Formulario para crear producto -->
+
+        <!-- Mostrar formulario de creación -->
+    }
+
+}
+
+
+

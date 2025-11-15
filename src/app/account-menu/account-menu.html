@@ -1,0 +1,15 @@
+@let auth = authSignal.authState();
+
+@if(auth.logged){
+    @switch(getRoleGroup(auth.role!)){
+        @case ('user') {
+            mostrar menu del usuario
+        }
+        @case ('business') {
+            mostrar menu del negocio
+        }
+        @case ('admin') {
+            mostrar menu del admin
+        }
+    }
+}

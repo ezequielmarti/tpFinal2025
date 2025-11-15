@@ -1,0 +1,22 @@
+@let products = productSignal.homeState();
+
+@if (products.featuredList.error && products.productList.error) {
+    mensaje de error(todo fallo)
+}@else {
+    
+    @if(products.featuredList.loading) {
+        mensaje de cargando
+    }@else if(products.featuredList.error) {
+        mostrar error cargando productos destacados
+    }@else{
+        mostrar los productos destacados
+    }
+
+    @if(products.productList.loading) {
+        mensaje de cargando
+    }@else if(products.productList.error) {
+        mostrar error cargando productos
+    }@else{
+        mostrar los productos(paginacion)
+    }
+}

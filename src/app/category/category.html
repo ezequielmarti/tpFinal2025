@@ -1,0 +1,9 @@
+@let category = categorySignal.categoryState();
+
+@if(category.loading){
+    mensaje de cargando
+}@else if(category.error){
+    html que muestra mensaje de error
+}@else{
+    muestra la lista de productos de la categoria(paginacion)
+}

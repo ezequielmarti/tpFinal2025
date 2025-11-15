@@ -1,0 +1,27 @@
+@let account = accountSignal.accountState();
+@let auth = authSignal.authState();
+
+@if(account.loading){
+    mensaje de cargando
+}@else if (!account.data) {
+    mensaje de error
+}@else {
+    @switch(getRoleGroup(auth.role!)){
+        @case ('user') {
+            @if(!edit){
+                mostrar info del usuario
+                
+                aca se puede agregar el agregar direccion y agregar local con sus forms
+                (agregar variables booleanas en el componente para usar un if else y cargar los distintos templates)
+            }@else {
+                aca adentro se puede incluir form de edicion.
+            }
+        }
+        @case ('business') {
+            lo mismo pero de cuenta empresarial
+        }
+        @case ('admin') {
+            lo mismo pero de cuenta administrador
+        }
+    }
+}
