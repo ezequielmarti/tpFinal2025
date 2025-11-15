@@ -1,0 +1,7 @@
+@let auth = authSignal.authState();
+
+mostrar el nav (inicio, categorias, etc) 
+si lo de abajo existe mostrar menu desplegable de cada opcion(es una idea)
+@if(auth.logged){
+    <app-account-menu/>
+}

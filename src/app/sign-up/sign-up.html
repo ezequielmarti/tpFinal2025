@@ -1,0 +1,18 @@
+@if(!accountType){
+    mostras los botones para cada rol y envias el resultado a onSelectAccount("el rol aca")
+}@else {
+    <div>
+        mostrar form para crear cuenta (email, username y password)
+        @switch(getRoleGroup(accountType)){
+            @case ('user') {
+                mostrar form para crear usuario
+            }
+            @case ('business') {
+                mostrar form para crear negocio
+            }
+            @case ('admin') {
+                mostrar form para crear admin
+            }
+        }
+    </div>
+}
