@@ -18,18 +18,19 @@
     <section class="card">
       <h3>Datos principales</h3>
       <div class="grid">
-        <label>Título<input [value]="product.data.title" /></label>
-        <label>Precio<input type="number" [value]="product.data.price" /></label>
-        <label>Stock<input type="number" [value]="product.data.stock" /></label>
-        <label>Descuento %<input type="number" [value]="product.data.discountPercentage" /></label>
+        <label>Titulo<input #title [value]="product.data.title" /></label>
+        <label>Precio<input #price type="number" [value]="product.data.price" /></label>
+        <label>Stock<input #stock type="number" [value]="product.data.stock" /></label>
+        <label>Descuento %<input #discount type="number" [value]="product.data.discountPercentage" /></label>
       </div>
-      <label>Descripción<textarea rows="3">{{ product.data.description }}</textarea></label>
+      <label>Descripcion<textarea #desc rows="3">{{ product.data.description }}</textarea></label>
       <div class="inline">
-        <label>Categoría<input [value]="product.data.category" /></label>
-        <label>Marca<input [value]="product.data.brand" /></label>
+        <label>Categoria<input #category [value]="product.data.category" /></label>
+        <label>Marca<input #brand [value]="product.data.brand" /></label>
       </div>
       <div class="form-actions">
-        <button class="btn primary" type="button" (click)="onSubmit()" disabled>Guardar</button>
+        <button class="btn primary" type="button" (click)="onSubmit(title.value, desc.value, category.value, brand.value, price.valueAsNumber, stock.valueAsNumber, discount.valueAsNumber)">Guardar</button>
+        <button class="btn ghost" type="button" (click)="onCancel()">Cancelar</button>
       </div>
     </section>
   }

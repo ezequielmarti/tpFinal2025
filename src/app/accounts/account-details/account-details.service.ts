@@ -8,7 +8,6 @@ import { UpdateBusiness, UpdateUser } from "../../../schema/user/create-account"
 import { CreateAddress, CreateStore } from "../../../schema/user/create-address-store";
 import { AuthService } from "../../service/auth-managment";
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -37,33 +36,30 @@ export class AccountDetailsService {
           next: (res) => {
             const current = this.authService.authState().username;
             const user = res.users.find(u => u.username === current);
-            if (!user) {
-              this.accountState.update(() => ({
-                data: null,
-                loading: false,
-                error: 'Usuario no encontrado (mock)'
-              }));
-              return;
-            }
-            this.accountState.update((state) => {
-              // map mock user into AccountSchema shape mínimamente
-              const data: AccountSchema = {
-                email: user.email,
-                username: user.username,
-                meta: { created: new Date(), updated: new Date() },
-                userProfile: undefined,
-                businessProfile: undefined,
-                adminProfile: user.role === 'admin' ? { publicName: user.displayName } : undefined,
-                address: [],
-                store: []
-              };
-              return {
-                ...state,
-                data,
-                loading: false,
-                error: null
-              };
-            });
+            const display = user?.displayName || current || 'Usuario';
+            const [firstname = display, lastname = ''] = display.split(' ');
+
+            const data: AccountSchema = {
+              email: user?.email || `${current || 'user'}@example.com`,
+              username: user?.username || current || 'usuario',
+              meta: { created: new Date(), updated: new Date() },
+              userProfile: (user?.role === 'user' || user?.role === 'user-seller')
+                ? { firstname, lastname, phone: user?.phone || null, birth: null }
+                : undefined,
+              businessProfile: user?.role === 'business'
+                ? { title: display, bio: '', contactEmail: user?.email || '', phone: user?.phone || '' }
+                : undefined,
+              adminProfile: user?.role === 'admin' ? { publicName: display } : undefined,
+              address: [],
+              store: []
+            };
+
+            this.accountState.update((state) => ({
+              ...state,
+              data,
+              loading: false,
+              error: null
+            }));
           }
         }),
         catchError((err) => {
@@ -102,8 +98,6 @@ export class AccountDetailsService {
     ).subscribe();
   }
 
-  // user y business estan definidos los campos actualizables, 
-  // admin solo puede cambiar el public username por eso recibe string
   updateAccount(account: UpdateBusiness | UpdateUser | string): void {
     this.accountState.update((state) => ({
       ...state,
@@ -129,37 +123,6 @@ export class AccountDetailsService {
           ...state,
           loading: false,
           error: err.error?.error || 'Error actualizando los datos' 
-        }));
-        return of(null);
-      })
-    ).subscribe();
-  }
-
-  delete(): void {
-    this.accountState.update((state) => ({
-      ...state,
-      loading: true,
-      error: null
-    }));
-
-    withAuthRetry<void>(() =>
-      this.http.delete<void>(`${this.apiUrl}`, {withCredentials: true}),
-      this.authService
-    ).pipe(
-      tap({
-        next: () => {
-          this.accountState.update(() => ({
-            data: null,
-            loading: false,
-            error: null
-          }));
-        }
-      }),
-      catchError((err) => {
-        this.accountState.update((state) => ({
-          ...state,
-          loading: false,
-          error: err.error?.error || 'Error eliminando la cuenta' 
         }));
         return of(null);
       })

@@ -9,22 +9,22 @@
     @switch(getRoleGroup(auth.role!)){
       @case ('user') {
         <ul class="menu-list">
-          <li><a routerLink="/account-details">Mi perfil</a></li>
+          <li><a routerLink="/accountDetails">Mi perfil</a></li>
           <li><a routerLink="/account-transactions">Compras y ventas</a></li>
           <li><a routerLink="/cart">Carrito</a></li>
         </ul>
       }
       @case ('business') {
         <ul class="menu-list">
-          <li><a routerLink="/account-products">Mis productos</a></li>
-          <li><a routerLink="/account-details">Perfil de negocio</a></li>
+          <li><a routerLink="/accountProducts">Mis productos</a></li>
+          <li><a routerLink="/accountDetails">Perfil de negocio</a></li>
           <li><a routerLink="/account-transactions">Ventas</a></li>
         </ul>
       }
       @case ('admin') {
         <ul class="menu-list">
-          <li><a routerLink="/admin/accounts">Cuentas</a></li>
-          <li><a routerLink="/admin/products">Productos</a></li>
+          <li><a routerLink="/admin/accountsManagment">Cuentas</a></li>
+          <li><a routerLink="/admin/productsManagment">Productos</a></li>
         </ul>
       }
     }

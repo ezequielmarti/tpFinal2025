@@ -1,31 +1,85 @@
 @let category = categorySignal.categoryState();
+@let filtered = filteredProducts();
+@let filtersState = filters();
 
 @if(category.loading){
-  <p>Cargando productos de la categoría...</p>
+  <p>Cargando productos de la categoria...</p>
 }@else if(category.error){
   <div class="alert error">{{ category.error }}</div>
 }@else if(!category.data.size){
-  <p class="muted">No hay productos en esta categoría.</p>
+  <p class="muted">No hay productos en esta categoria.</p>
 }@else{
-  <header class="page-header">
+  <header class="page-header category-header">
     <div>
-      <h2>Categoría: {{ category.currentCategory || 'Todas' }}</h2>
-      <p class="muted">Total: {{ category.total }}</p>
+      <h2>Categoria: {{ category.currentCategory || 'Todas' }}</h2>
+    </div>
+    <div class="sort-chip sort-dropdown" (click)="toggleSort()">
+      <span class="muted">Ordenar por</span>
+      <div class="sort-select">
+        <button type="button" class="sort-pill">{{ sortLabel() }}</button>
+      </div>
+      @if(sortOpen()){
+        <ul class="sort-menu">
+          @for (opt of sortOptions; track opt.value) {
+            <li>
+              <button type="button" (click)="selectSort(opt.value)">{{ opt.label }}</button>
+            </li>
+          }
+        </ul>
+      }
     </div>
   </header>
 
-  <div class="product-grid">
-    @for (page of category.data.values(); track $index) {
-      @for (item of page; track item.id) {
-        <a class="card product" [routerLink]="['/product', item.id]">
-          <img [src]="item.thumbnail || item.images?.[0] || 'https://picsum.photos/seed/fallback/400'" alt="{{ item.title }}">
-          <h3>{{ item.title }}</h3>
-          <p class="muted">{{ item.description }}</p>
-          <div class="meta">
-            <span>${{ item.price }}</span>
-          </div>
-        </a>
+  <div class="category-layout">
+    <aside class="filters card slim">
+      <div class="filters__header">
+        <h3>Filtros</h3>
+        <button type="button" class="btn ghost" (click)="clearFilters()">Limpiar</button>
+      </div>
+
+      <div class="filter-group">
+        <label>Tag</label>
+        <input type="text" placeholder="Ej: tech, home" [value]="filtersState.tag" (input)="onFilterChange('tag', $any($event.target).value)" />
+      </div>
+
+      <div class="filter-group">
+        <label>Precio</label>
+        <div class="inline">
+          <input type="number" min="0" placeholder="Min" [value]="filtersState.minPrice ?? ''" (input)="onFilterChange('minPrice', $any($event.target).value)" />
+          <input type="number" min="0" placeholder="Max" [value]="filtersState.maxPrice ?? ''" (input)="onFilterChange('maxPrice', $any($event.target).value)" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Descuento desde (%)</label>
+        <input type="number" min="0" max="100" placeholder="Ej: 20" [value]="filtersState.minDiscount ?? ''" (input)="onFilterChange('minDiscount', $any($event.target).value)" />
+      </div>
+    </aside>
+
+    <div class="product-grid">
+      @if(!filtered.length){
+        <p class="muted">No hay productos que coincidan con los filtros.</p>
+      }@else{
+        @for (item of filtered; track item.id) {
+          <a class="card product" [routerLink]="['/product', item.id]">
+            <img [src]="item.thumbnail || item.images?.[0] || 'https://picsum.photos/seed/fallback/400'" alt="{{ item.title }}">
+            <h3>{{ item.title }}</h3>
+            <p class="muted">{{ item.description }}</p>
+            @let final = item.price - (item.price * item.discountPercentage / 100);
+            <div class="meta product-meta">
+              @if(item.discountPercentage > 0){
+                <div>
+                  <div class="price-original">${{ item.price }}</div>
+                  <div class="price-final">${{ final }}</div>
+                </div>
+                <span class="badge success">{{ item.discountPercentage }}% OFF</span>
+              }@else{
+                <strong class="price-final">${{ item.price }}</strong>
+              }
+            </div>
+          </a>
+        }
       }
-    }
+    </div>
   </div>
 }

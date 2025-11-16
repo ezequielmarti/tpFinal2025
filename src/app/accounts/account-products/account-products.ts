@@ -32,7 +32,7 @@ export class AccountProducts {
 
   canSell(): boolean { // admin lo puedo sacar porque el admin no deberia entrar aca
     const auth = this.authSignal.authState();
-    return auth.role !== Role.Admin && auth.role !== Role.User;
+    return auth.role === Role.Seller;
   }
 
   onGenerate() {
@@ -45,5 +45,14 @@ export class AccountProducts {
 
   onSubmit() { // si el producto se crea exitosamente esta linea cambia el template del html
     this.generate = false;
+  }
+
+  onEdit(id: string) {
+    this.router.navigate(['/productUpdate', id]);
+  }
+
+  noAccess(): boolean {
+    const auth = this.authSignal.authState();
+    return !auth.logged || !this.canSell();
   }
 }

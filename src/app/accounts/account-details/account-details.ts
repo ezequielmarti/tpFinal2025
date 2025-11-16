@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
-import { AccountDetailsService } from './account-details-service';
+import { AccountDetailsService } from './account-details.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth-managment';
 import { getRoleGroup } from '../../../enum/role';

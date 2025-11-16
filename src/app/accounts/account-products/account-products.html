@@ -1,11 +1,11 @@
 @let products = productSignal.accountProductsState();
 
 <section class="account-products">
-  @if (!canSell()) {
+  @if (noAccess()) {
     <div class="card warning">
-      <h2>No podés publicar todavía</h2>
-      <p>Completa los datos de tu cuenta para habilitar la venta.</p>
-      <a [routerLink]="['/account-details']" class="btn primary">Completar datos</a>
+      <h2>No podes publicar</h2>
+      <p>Este modulo es solo para cuentas seller.</p>
+      <a [routerLink]="['/accountDetails']" class="btn primary">Ver mi perfil</a>
     </div>
   } @else {
     <header class="toolbar">
@@ -30,9 +30,9 @@
       <section class="card">
         <h3>Nuevo producto</h3>
         <form class="grid" (ngSubmit)="onSubmit()">
-          <label>Título<input name="title" required /></label>
-          <label>Descripción<textarea name="description" rows="3" required></textarea></label>
-          <label>Categoría<input name="category" required /></label>
+          <label>Titulo<input name="title" required /></label>
+          <label>Descripcion<textarea name="description" rows="3" required></textarea></label>
+          <label>Categoria<input name="category" required /></label>
           <div class="inline">
             <label>Precio<input name="price" type="number" step="0.01" required /></label>
             <label>Stock inicial<input name="stock" type="number" required /></label>
@@ -51,7 +51,7 @@
     } @else {
       @if (!products.data?.length) {
         <div class="card">
-          <p>Todavía no publicaste productos.</p>
+          <p>Todavia no publicaste productos.</p>
           <button type="button" class="btn primary" (click)="onGenerate()">Crear mi primer producto</button>
         </div>
       } @else {
@@ -65,7 +65,9 @@
                   <h3>{{ product.title }}</h3>
                   <p class="muted">{{ product.description }}</p>
                 </div>
-                <span class="badge muted">ID: {{ product.id }}</span>
+                <div class="actions column-actions">
+                  <span class="badge muted">ID: {{ product.id }}</span>
+                </div>
               </div>
 
               <div class="owner-card__price">
@@ -79,7 +81,7 @@
               </div>
 
               <div class="owner-card__stats">
-                <div><strong>Categoría:</strong> {{ product.category }}</div>
+                <div><strong>Categoria:</strong> {{ product.category }}</div>
                 <div><strong>Marca:</strong> {{ product.brand }}</div>
                 <div><strong>Stock:</strong> {{ product.stock }}</div>
                 <div><strong>Descuento:</strong> {{ product.discountPercentage }}%</div>
@@ -88,30 +90,37 @@
               <div class="owner-card__updates">
                 <div class="update-row">
                   <div class="update-label">Nuevo precio</div>
-                  <input #newPrice type="number" step="0.01" [value]="product.price" />
-                  <button type="button" class="btn ghost"
-                          (click)="productSignal.updatePrice(product.id, newPrice.valueAsNumber || 0)"
-                          [disabled]="products.updateLoading">Guardar</button>
+                  <div class="update-field">
+                    <input #newPrice type="number" step="0.01" [value]="product.price" />
+                    <button type="button" class="btn ghost"
+                            (click)="productSignal.updatePrice(product.id, newPrice.valueAsNumber || 0)"
+                            [disabled]="products.updateLoading">Guardar</button>
+                  </div>
                 </div>
                 <div class="update-row">
                   <div class="update-label">Stock (+/-)</div>
-                  <input #stockDelta type="number" step="1" value="0" />
-                  <button type="button" class="btn ghost"
-                          (click)="productSignal.updateStock(product.id, stockDelta.valueAsNumber || 0)"
-                          [disabled]="products.updateLoading">Guardar</button>
+                  <div class="update-field">
+                    <input #stockDelta type="number" step="1" value="0" />
+                    <button type="button" class="btn ghost"
+                            (click)="productSignal.updateStock(product.id, stockDelta.valueAsNumber || 0)"
+                            [disabled]="products.updateLoading">Guardar</button>
+                  </div>
                 </div>
                 <div class="update-row">
                   <div class="update-label">Descuento %</div>
-                  <input #newDiscount type="number" min="0" max="100" step="1"
-                         [value]="product.discountPercentage" />
-                  <button type="button" class="btn ghost"
-                          (click)="productSignal.updateDiscount(product.id, newDiscount.valueAsNumber || 0)"
-                          [disabled]="products.updateLoading">Guardar</button>
+                  <div class="update-field">
+                    <input #newDiscount type="number" min="0" max="100" step="1"
+                           [value]="product.discountPercentage" />
+                    <button type="button" class="btn ghost"
+                            (click)="productSignal.updateDiscount(product.id, newDiscount.valueAsNumber || 0)"
+                            [disabled]="products.updateLoading">Guardar</button>
+                  </div>
                 </div>
               </div>
 
               <footer class="muted owner-card__footer">
                 <span>Tags: {{ product.tags?.join(', ') || 'Sin tags' }}</span>
+                <button type="button" class="btn ghost" (click)="onEdit(product.id)">Editar</button>
               </footer>
             </article>
           }

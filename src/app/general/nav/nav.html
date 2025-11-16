@@ -8,15 +8,17 @@
         <button type="button" class="user-chip">
           <span class="avatar">{{ auth.username?.charAt(0) | uppercase }}</span>
           <span class="name">{{ auth.username }}</span>
-          <span class="chevron">▾</span>
         </button>
         <div class="user-menu__menu">
-          <a routerLink="/account-details">Mi perfil</a>
+          <a routerLink="/accountDetails">Mi perfil</a>
           <a routerLink="/account-transactions">Compras y ventas</a>
           @if(auth.role === Role.Seller || auth.role === Role.Business){
-            <a routerLink="/account-products">Mis productos</a>
+            <a routerLink="/accountProducts">Mis productos</a>
+          } @else if(auth.role === Role.Admin){
+            <a routerLink="/admin/accountsManagment">Admin: Cuentas</a>
+            <a routerLink="/admin/productsManagment">Admin: Productos</a>
           }
-          <button type="button" (click)="logout()">Cerrar sesión</button>
+          <button type="button" (click)="logout()">Cerrar sesion</button>
         </div>
       </div>
     }
@@ -30,9 +32,9 @@
   <div class="navbar__links">
     <a routerLink="/home">Inicio</a>
     <div class="nav-category">
-      <button type="button" class="linklike">Categorías ▾</button>
+      <button type="button" class="linklike">Categorias</button>
       <div class="nav-category__menu">
-        <a routerLink="/category/electronic">Electrónica</a>
+        <a routerLink="/category/electronic">Electronica</a>
         <a routerLink="/category/sports">Deportes</a>
         <a routerLink="/category/home-appliance">Hogar</a>
         <a routerLink="/category/fashion">Moda</a>
@@ -43,8 +45,7 @@
   <div class="navbar__actions">
     @if(!auth.logged){
       <a class="btn ghost" routerLink="/sign-up">Crear cuenta</a>
-      <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl }">Iniciar sesión</a>
+      <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl }">Iniciar sesion</a>
     }
   </div>
 </nav>
-
