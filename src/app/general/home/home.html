@@ -1,22 +1,89 @@
 @let products = productSignal.homeState();
 
-@if (products.featuredList.error && products.productList.error) {
-    mensaje de error(todo fallo)
-}@else {
-    
-    @if(products.featuredList.loading) {
-        mensaje de cargando
-    }@else if(products.featuredList.error) {
-        mostrar error cargando productos destacados
-    }@else{
-        mostrar los productos destacados
-    }
+  @if (products.featuredList.error && products.productList.error) {
+    <div class="alert error">No pudimos cargar los productos.</div>
+  }@else {
+    <header class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">Bienvenido</p>
+        <h1>Encontrá los mejores productos</h1>
+        <p class="muted">Explorá destacados o buscá por categoría.</p>
+    </div>
+  </header>
 
-    @if(products.productList.loading) {
-        mensaje de cargando
-    }@else if(products.productList.error) {
-        mostrar error cargando productos
+  <section class="quick-links">
+    <h3>Explorá categorías</h3>
+    <div class="card-row">
+      <a class="chip" href="/category/electronic">Electrónica</a>
+      <a class="chip" href="/category/sports">Deportes</a>
+      <a class="chip" href="/category/home-appliance">Hogar</a>
+      <a class="chip" href="/category/fashion">Moda</a>
+    </div>
+  </section>
+
+  <section class="featured">
+    <h2>Destacados</h2>
+    @if(products.featuredList.loading) {
+      <p>Cargando destacados...</p>
+    }@else if(products.featuredList.error) {
+      <div class="alert error">{{ products.featuredList.error }}</div>
+    }@else if(!products.featuredList.data.length){
+      <p class="muted">Sin productos destacados.</p>
     }@else{
-        mostrar los productos(paginacion)
+      <div class="product-grid">
+        @for (item of products.featuredList.data; track item.id) {
+          <a class="card product" [routerLink]="['/product', item.id]">
+            <img [src]="item.thumbnail || item.images?.[0] || 'https://picsum.photos/seed/fallback/400'" alt="{{ item.title }}">
+            <h3>{{ item.title }}</h3>
+            <p class="muted">{{ item.description }}</p>
+            <div class="meta product-meta">
+              @if(item.discountPercentage > 0){
+                <div>
+                  <div class="price-original">${{ item.price }}</div>
+                  <div class="price-final">${{ item.price - (item.price * item.discountPercentage / 100) }}</div>
+                </div>
+                <span class="badge success">{{ item.discountPercentage }}% OFF</span>
+              }@else{
+                <strong class="price-final">${{ item.price }}</strong>
+              }
+            </div>
+          </a>
+        }
+      </div>
     }
+  </section>
+
+  <section class="catalog">
+    <h2>Todos los productos</h2>
+    @if(products.productList.loading) {
+      <p>Cargando productos...</p>
+    }@else if(products.productList.error) {
+      <div class="alert error">{{ products.productList.error }}</div>
+    }@else if(!products.productList.data.size){
+      <p class="muted">Aún no hay productos en el listado.</p>
+    }@else{
+      <div class="product-grid">
+        @for (page of products.productList.data.values(); track $index) {
+          @for (item of page; track item.id) {
+            <a class="card product" [routerLink]="['/product', item.id]">
+              <img [src]="item.thumbnail || item.images?.[0] || 'https://picsum.photos/seed/fallback/400'" alt="{{ item.title }}">
+              <h3>{{ item.title }}</h3>
+              <p class="muted">{{ item.description }}</p>
+              <div class="meta product-meta">
+                @if(item.discountPercentage > 0){
+                  <div>
+                    <div class="price-original">${{ item.price }}</div>
+                    <div class="price-final">${{ item.price - (item.price * item.discountPercentage / 100) }}</div>
+                  </div>
+                  <span class="badge success">{{ item.discountPercentage }}% OFF</span>
+                }@else{
+                  <strong class="price-final">${{ item.price }}</strong>
+                }
+              </div>
+            </a>
+          }
+        }
+      </div>
+    }
+  </section>
 }
