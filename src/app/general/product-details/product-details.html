@@ -2,23 +2,141 @@
 @let auth = authSignal.authState();
 
 @if (product.loading) {
-    mensaje cargando
-}@else if (product.error) {
-    muestra mensaje de error 
-}@else {
+  <p>Cargando producto...</p>
+} @else if (product.error) {
+  <div class="alert error">{{ product.error }}</div>
+} @else {
+  @if(!product.data){
+    <p class="muted">Sin datos del producto.</p>
+  } @else {
+    @let finalPrice = product.data.price - (product.data.price * product.data.discountPercentage / 100);
+    <section class="product-details">
+      <section class="card product-hero">
+        <div class="product-hero__media">
+          <div class="gallery-main">
+            <img [src]="product.data.thumbnail || product.data.images?.[0] || 'https://picsum.photos/seed/fallback/600'" [alt]="product.data.title">
+          </div>
+          @if(product.data.images?.length){
+            <div class="gallery-thumbs">
+              @for (img of product.data.images; track $index) {
+                <img [src]="img" [alt]="product.data.title" />
+              }
+            </div>
+          }
+        </div>
 
-    aca muestra la info del producto
+        <div class="product-hero__info">
+          <p class="muted">{{ product.data.brand }} · {{ product.data.category }}</p>
+          <h1>{{ product.data.title }}</h1>
 
-    @if(auth.logged){
-        muestra el boton de agregar al carrito/comprar
-    }@else{
-        mensaje de loggeate para comprar
-    }
+          <div class="price-block">
+            @if(product.data.discountPercentage > 0){
+              <div class="muted original-price">${{ product.data.price }}</div>
+              <div class="price-final">
+                <strong>${{ finalPrice }}</strong>
+                <span class="badge success">{{ product.data.discountPercentage }}% OFF</span>
+              </div>
+            }@else{
+              <div class="price-final">
+                <strong>${{ product.data.price }}</strong>
+              </div>
+            }
+            <div class="muted">Stock: {{ product.data.stock }}</div>
+          </div>
 
-    @if(auth.logged){
-        aca el forms de creacion de review (1-10)
-    }@else{
-        aca muestra un mensaje que diga que si queres 
-        dejar una reseña te tenes que logear.
-    }
+          <div class="shipping">
+            {{
+              finalPrice >= 150000
+                ? 'Envío gratis en tu compra'
+                : (product.data.weight > 3 ? 'Envío estimado $3500' : 'Envío estimado $1800')
+            }}
+          </div>
+
+          @if(auth.logged){
+            <div class="actions">
+              <button type="button" class="btn primary">Comprar ahora</button>
+              <button type="button" class="btn ghost">Agregar al carrito</button>
+            </div>
+          }@else{
+            <p class="muted">Inicia sesión para comprar o agregar al carrito.</p>
+          }
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Descripción</h3>
+        <p>{{ product.data.description }}</p>
+      </section>
+
+      @if(getRoleGroup(auth.role!) !== 'user'){
+        <section class="card">
+          <button class="btn ghost" routerLink="/account-products">Ir a mis productos</button>
+        </section>
+      }
+
+      <section class="card">
+        <h3>Envío y garantía</h3>
+        <div class="grid">
+          <div>
+            <p class="muted">Peso</p>
+            <strong>{{ product.data.weight }} kg</strong>
+          </div>
+          <div>
+            <p class="muted">Garantía</p>
+            <strong>{{ product.data.warrantyInformation || 'No especificada' }}</strong>
+          </div>
+          <div>
+            <p class="muted">Envío</p>
+            <strong>{{ product.data.shippingInformation || 'Consultar' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Tienda</h3>
+        @if(product.data.store?.length){
+          <ul class="list">
+            @for (store of product.data.store; track store.id) {
+              <li>
+                <strong>{{ store.address }}</strong>
+                <div class="muted">{{ store.city }} - {{ store.country }}</div>
+                <div class="muted">Tel: {{ store.phone }}</div>
+              </li>
+            }
+          </ul>
+        }@else{
+          <p class="muted">Sin datos de tienda.</p>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Reseñas</h3>
+        @if(auth.logged){
+          <form class="grid" novalidate>
+            <label>Puntaje (1-10)<input type="number" min="1" max="10" value="10" /></label>
+            <label>Comentario<textarea rows="3" placeholder="Escribe tu experiencia"></textarea></label>
+            <button type="button" class="btn primary" disabled>Enviar reseña</button>
+          </form>
+        }@else{
+          <p class="muted">Inicia sesión para dejar una reseña.</p>
+        }
+
+        @if(product.data.reviews?.length){
+          <ul class="list">
+            @for (review of product.data.reviews; track review.username) {
+              <li>
+                <div>
+                  <strong>{{ review.username }}</strong>
+                  <span class="muted">Puntaje: {{ review.rating }}</span>
+                </div>
+                <p>{{ review.comment || 'Sin comentario' }}</p>
+              </li>
+            }
+          </ul>
+        }@else{
+          <p class="muted">Sin reseñas aún.</p>
+        }
+      </section>
+    </section>
+  }
 }

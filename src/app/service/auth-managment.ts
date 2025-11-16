@@ -39,6 +39,47 @@ export class AuthService {
       error: null
     }));
 
+    if (!Url) {
+      this.http.get<{ users: Array<{ username: string; email: string; password: string; role: Role }> }>('/mock/db.json')
+      .pipe(
+        tap({
+          next: (res) => {
+            const found = res.users.find((u) =>
+              u.username.toLowerCase() === auth.account.toLowerCase() ||
+              u.email.toLowerCase() === auth.account.toLowerCase()
+            );
+
+            if (!found || found.password !== auth.password) {
+              this.authState.update((state) => ({
+                ...state,
+                loading: false,
+                error: 'Credenciales inválidas (mock)'
+              }));
+              return;
+            }
+
+            this.authState.update(() => ({
+              logged: true,
+              username: found.username,
+              role: found.role,
+              loading: false,
+              error: null
+            }));
+          }
+        }),
+        catchError((error) => {
+          this.authState.update((state) => ({
+            ...state,
+            loading: false,
+            error: error.error?.error || 'Error al ingresar (mock)'
+          }));
+          return of(null);
+        })
+      ).subscribe();
+
+      return;
+    }
+
     this.http.post<{username: string, role: Role}>(`${this.apiUrl}/login`, auth, {withCredentials: true})
     .pipe(
       tap({
@@ -70,6 +111,11 @@ export class AuthService {
       loading: true,
       error: null
     }));
+
+    if (!Url) {
+      this.setState();
+      return;
+    }
 
     this.http.post<void>(`${this.apiUrl}/logout`, {}, {withCredentials: true})
     .pipe(

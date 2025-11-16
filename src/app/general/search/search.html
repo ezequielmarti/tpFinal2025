@@ -1,11 +1,22 @@
 @let search = searchSignal.searchState();
 
 @if (search.loading) {
-    mensaje de cargando
+  <p>Cargando resultados...</p>
 }@else if (search.error) {
-    muestra mensaje con el error 
+  <div class="alert error">{{ search.error }}</div>
 }@else if (search.data.length === 0){
-    un mensaje de que no hay resultados
+  <p class="muted">No hay resultados para tu búsqueda.</p>
 }@else {
-    aca se muestra el arreglo de los resultados 
+  <div class="product-grid">
+    @for (item of search.data; track item.id) {
+      <a class="card product" [routerLink]="['/product', item.id]">
+        <img [src]="item.thumbnail || item.images?.[0] || 'https://picsum.photos/seed/fallback/400'" alt="{{ item.title }}">
+        <h3>{{ item.title }}</h3>
+        <p class="muted">{{ item.description }}</p>
+        <div class="meta">
+          <span>${{ item.price }}</span>
+        </div>
+      </a>
+    }
+  </div>
 }

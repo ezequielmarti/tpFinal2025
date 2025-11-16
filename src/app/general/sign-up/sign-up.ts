@@ -17,6 +17,7 @@ export class SignIn {
   private router = inject(Router);
   
   getRoleGroup = getRoleGroup;
+  Role = Role;
   accountType = null as Role | null;
 
   onSelectAccount (role: Role) {
@@ -28,7 +29,7 @@ export class SignIn {
     //validar que sea del tipo crear el tipo de cuenta 
     // con los validate user/busines/admin que estan el 
     // schema antes de mandarlo a crear acount
-    this.accountSignal.createAccount() 
+    this.accountSignal.createAccount({} as any) 
     .pipe(
       switchMap((ok) => {
         if (!ok) return of(false);  // si falló, no intentar refresh

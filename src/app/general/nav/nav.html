@@ -1,7 +1,50 @@
 @let auth = authSignal.authState();
 
-mostrar el nav (inicio, categorias, etc) 
-si lo de abajo existe mostrar menu desplegable de cada opcion(es una idea)
-@if(auth.logged){
-    <app-account-menu/>
-}
+<nav class="navbar">
+  <div class="navbar__brand user-area">
+    <a routerLink="/home">Shop</a>
+    @if(auth.logged){
+      <div class="user-menu">
+        <button type="button" class="user-chip">
+          <span class="avatar">{{ auth.username?.charAt(0) | uppercase }}</span>
+          <span class="name">{{ auth.username }}</span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="user-menu__menu">
+          <a routerLink="/account-details">Mi perfil</a>
+          <a routerLink="/account-transactions">Compras y ventas</a>
+          @if(auth.role === Role.Seller || auth.role === Role.Business){
+            <a routerLink="/account-products">Mis productos</a>
+          }
+          <button type="button" (click)="logout()">Cerrar sesión</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <form class="navbar__search" role="search" (submit)="onSearch(query.value, $event)">
+    <input #query type="search" placeholder="Buscar productos..." aria-label="Buscar productos" (keyup.enter)="onSearch(query.value, $event)" />
+    <button type="button" class="btn" (click)="onSearch(query.value, $event)">Buscar</button>
+  </form>
+
+  <div class="navbar__links">
+    <a routerLink="/home">Inicio</a>
+    <div class="nav-category">
+      <button type="button" class="linklike">Categorías ▾</button>
+      <div class="nav-category__menu">
+        <a routerLink="/category/electronic">Electrónica</a>
+        <a routerLink="/category/sports">Deportes</a>
+        <a routerLink="/category/home-appliance">Hogar</a>
+        <a routerLink="/category/fashion">Moda</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar__actions">
+    @if(!auth.logged){
+      <a class="btn ghost" routerLink="/sign-up">Crear cuenta</a>
+      <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl }">Iniciar sesión</a>
+    }
+  </div>
+</nav>
+
