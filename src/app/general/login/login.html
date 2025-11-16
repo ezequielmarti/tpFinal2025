@@ -1,0 +1,22 @@
+<section class="card login-card">
+  <h2>Iniciar sesión</h2>
+  <p class="muted">Ingresa con tu usuario o email.</p>
+  <form class="grid" (ngSubmit)="submit()">
+    <label>Usuario o email
+      <input name="account" [(ngModel)]="credentials.account" required placeholder="tu_usuario" />
+    </label>
+    <label>Contraseña
+      <input name="password" type="password" [(ngModel)]="credentials.password" required placeholder="••••••••" />
+    </label>
+    <div class="form-actions">
+      <button class="btn primary" type="submit">Ingresar</button>
+      <a class="btn ghost" href="/sign-up">Crear cuenta</a>
+    </div>
+  </form>
+  @let auth = authSignal.authState();
+  @if(auth.loading){
+    <p class="muted">Ingresando...</p>
+  }@else if(auth.error){
+    <div class="alert error">{{ auth.error }}</div>
+  }
+</section>

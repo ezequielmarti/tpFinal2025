@@ -1,18 +1,53 @@
-@if(!accountType){
-    mostras los botones para cada rol y envias el resultado a onSelectAccount("el rol aca")
-}@else {
-    <div>
-        mostrar form para crear cuenta (email, username y password)
-        @switch(getRoleGroup(accountType)){
-            @case ('user') {
-                mostrar form para crear usuario
-            }
-            @case ('business') {
-                mostrar form para crear negocio
-            }
-            @case ('admin') {
-                mostrar form para crear admin
-            }
-        }
+<section class="sign-up">
+  @if(!accountType){
+    <header class="page-header">
+      <h2>Crear cuenta</h2>
+      <p class="muted">Elegí el tipo de cuenta para empezar.</p>
+    </header>
+    <div class="card grid">
+      <button type="button" class="btn" (click)="onSelectAccount(Role.User)">Usuario</button>
+      <button type="button" class="btn" (click)="onSelectAccount(Role.Business)">Negocio</button>
+      <button type="button" class="btn ghost" (click)="onSelectAccount(Role.Admin)">Admin</button>
     </div>
-}
+  }@else {
+    <div class="card">
+      <h3>Datos de acceso</h3>
+      <div class="grid">
+        <label>Email<input type="email" placeholder="email@ejemplo.com" /></label>
+        <label>Usuario<input placeholder="nombre de usuario" /></label>
+        <label>Contraseña<input type="password" placeholder="••••••" /></label>
+      </div>
+
+      @switch(getRoleGroup(accountType)){
+        @case ('user') {
+          <h4>Datos de usuario</h4>
+          <div class="grid">
+            <label>Nombre<input placeholder="Nombre" /></label>
+            <label>Apellido<input placeholder="Apellido" /></label>
+            <label>Teléfono<input placeholder="+54..." /></label>
+          </div>
+        }
+        @case ('business') {
+          <h4>Datos de negocio</h4>
+          <div class="grid">
+            <label>Nombre público<input placeholder="Mi tienda" /></label>
+            <label>Bio<textarea rows="2" placeholder="Descripción corta"></textarea></label>
+            <label>Teléfono<input placeholder="+54..." /></label>
+            <label>Correo de contacto<input type="email" placeholder="contacto@tienda.com" /></label>
+          </div>
+        }
+        @case ('admin') {
+          <h4>Datos de administrador</h4>
+          <div class="grid">
+            <label>Nombre público<input placeholder="Admin" /></label>
+          </div>
+        }
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn primary" (click)="onSubmit()">Crear cuenta</button>
+        <button type="button" class="btn ghost" (click)="accountType = null">Elegir otro tipo</button>
+      </div>
+    </div>
+  }
+</section>

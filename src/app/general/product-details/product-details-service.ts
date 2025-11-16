@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject, signal } from "@angular/core";
-import { tap, catchError, of } from "rxjs";
+import { tap, catchError, of, map } from "rxjs";
 import { Url } from "../../../common/const";
 import { CreateReview } from "../../../schema/Product/createReview";
 import { ProductSchema } from "../../../schema/Product/product";
@@ -28,26 +28,57 @@ export class ProductDetailsService {
       error: null
     }));
 
-    this.http.get<{data: ProductSchema}>(`${this.apiUrl}/${productId}`)
-    .pipe(
-      tap({
-        next: (response) => {
+    if (!Url) {
+      this.http.get<{ products: any[] }>('/mock/db.json')
+      .pipe(
+        map(res => res.products.find(p => p.id === productId)),
+        tap((product) => {
+          if (!product) {
+            this.productState.update(() => ({
+              data: null,
+              loading: false,
+              error: 'Producto no encontrado'
+            }));
+            return;
+          }
           this.productState.update(() => ({
-            data: response.data,
+            data: product as ProductSchema,
             loading: false,
             error: null
           }));
-        }
-      }),
-      catchError((err) => {
-        this.productState.update(() => ({
-          data: null,
-          loading: false,
-          error: err.error?.error || 'Error al cargar el producto'
-        }));
-        return of(null);
-      })
-    ).subscribe();
+        }),
+        catchError((err) => {
+          this.productState.update(() => ({
+            data: null,
+            loading: false,
+            error: err.error?.error || 'Error al cargar el producto'
+          }));
+          return of(null);
+        })
+      ).subscribe();
+      return;
+    }
+
+    this.http.get<{data: ProductSchema}>(`${this.apiUrl}/${productId}`)
+      .pipe(
+        tap({
+          next: (response) => {
+            this.productState.update(() => ({
+              data: response.data,
+              loading: false,
+              error: null
+            }));
+          }
+        }),
+        catchError((err) => {
+          this.productState.update(() => ({
+            data: null,
+            loading: false,
+            error: err.error?.error || 'Error al cargar el producto'
+          }));
+          return of(null);
+        })
+      ).subscribe();
   }
 
   createReview(review: CreateReview): void {

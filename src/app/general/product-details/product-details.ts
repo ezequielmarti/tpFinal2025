@@ -1,14 +1,25 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductDetailsService } from './product-details-service';
 import { AuthService } from '../../service/auth-managment';
+import { getRoleGroup } from '../../../enum/role';
 
 @Component({
   selector: 'app-product-details',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './product-details.html',
   styleUrl: './product-details.css',
 })
-export class ProductDetails {
+export class ProductDetails implements OnInit {
   protected readonly productSignal = inject(ProductDetailsService);
   protected readonly authSignal = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  getRoleGroup = getRoleGroup;
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.productSignal.getProduct(id);
+    }
+  }
 }
