@@ -28,7 +28,7 @@ export class ProductUpdate implements OnInit {
   }
 
   onSubmit(){
-
-    this.productSignal.updateProduct()
+    // TODO: reemplazar con los datos del formulario cuando esté implementado
+    this.productSignal.updateProduct({} as any);
   }
 }

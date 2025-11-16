@@ -1,1 +1,493 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global layout */
+:root {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --text: #1f2a3d;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-strong: #1d4ed8;
+  --danger: #dc2626;
+  --border: #e5e7eb;
+  --shadow: 0 6px 18px rgba(17, 24, 39, 0.08);
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.layout {
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Text helpers */
+.muted {
+  color: var(--muted);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0 0 0.25rem;
+}
+
+/* Cards and grids */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.card-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.inline {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.product-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.card.product h3 {
+  margin: 0 0 0.25rem;
+}
+
+.card.product {
+  text-decoration: none;
+  color: inherit;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.card.product img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+}
+
+.product-meta {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta {
+  display: flex;
+  gap: 0.75rem;
+  color: var(--muted);
+}
+
+.price-original {
+  text-decoration: line-through;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.price-final {
+  color: var(--primary-strong);
+  font-weight: 700;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  background: var(--card);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.primary { background: var(--primary); }
+.btn.primary:hover { background: var(--primary-strong); }
+.btn.ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font: inherit;
+  color: var(--text);
+  background: #fff;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+/* Navbar */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.navbar__brand a {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.navbar__search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navbar__search input {
+  flex: 1;
+}
+
+.navbar__search .btn {
+  padding-inline: 1.2rem;
+}
+.navbar__search {
+  flex: 1;
+}
+.navbar__links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.navbar__links a,
+.navbar__actions a {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.navbar__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.nav-category {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-category .linklike {
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-category__menu {
+  display: none;
+  position: absolute;
+  top: 120%;
+  left: 0;
+  right: auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: 10px;
+  min-width: 190px;
+  padding: 0.4rem 0;
+  z-index: 20;
+  flex-direction: column;
+}
+
+.nav-category__menu a {
+  padding: 0.45rem 0.8rem;
+  display: block;
+  color: var(--text);
+}
+
+.nav-category__menu a:hover {
+  background: var(--bg);
+}
+
+.user-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu__menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  min-width: 210px;
+  padding: 0;
+  z-index: 20;
+  flex-direction: column;
+  pointer-events: auto;
+  font-size: 0.95rem;
+}
+
+.user-menu__menu a,
+.user-menu__menu button {
+  padding: 0.55rem 0.9rem;
+  display: block;
+  width: 100%;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.user-menu__menu button {
+  text-align: left;
+}
+
+.user-menu__menu a:hover,
+.user-menu__menu button:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.user-menu:hover .user-menu__menu,
+.user-menu:focus-within .user-menu__menu {
+  display: flex;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.user-chip:hover {
+  background: var(--bg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.user-chip .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.user-chip .name {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+}
+
+.user-chip .chevron {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.nav-category:hover .nav-category__menu,
+.nav-category:focus-within .nav-category__menu {
+  display: flex;
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.hero__copy h1 {
+  margin: 0.1rem 0 0.4rem;
+  font-size: 2rem;
+}
+
+.hero__highlights {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hero__highlights .card {
+  text-align: center;
+  min-width: 140px;
+}
+
+.quick-links .chip {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  background: #fff;
+}
+
+/* Sections */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.alert {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+.alert.error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecdd3;
+}
+
+.menu {
+  min-width: 200px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.6rem;
+  box-shadow: var(--shadow);
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-list li a {
+  display: block;
+  padding: 0.5rem 0.4rem;
+  text-decoration: none;
+  color: var(--text);
+  border-radius: 8px;
+}
+
+.menu-list li a:hover {
+  background: var(--bg);
+}

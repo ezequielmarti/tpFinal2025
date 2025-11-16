@@ -1,0 +1,226 @@
+{
+  "users": [
+    { "id": "u1", "username": "arturo",   "email": "arturo@mail.com",   "role": "user-seller", "displayName": "Arturo Gomez",    "password": "pass123" },
+    { "id": "u2", "username": "lucia",    "email": "lucia@mail.com",    "role": "user-seller", "displayName": "Lucía Perlotti",  "password": "pass123" },
+    { "id": "u3", "username": "tiendaSur","email": "ventas@sur.com",    "role": "business",    "displayName": "Tienda Sur",      "password": "pass123" },
+    { "id": "u4", "username": "techhub",  "email": "hola@techhub.io",   "role": "business",    "displayName": "Tech Hub",        "password": "pass123" },
+    { "id": "u5", "username": "marian",   "email": "marian@mail.com",   "role": "user",        "displayName": "Marian Paz",      "password": "pass123" },
+    { "id": "u6", "username": "bruno",    "email": "bruno@mail.com",    "role": "user",        "displayName": "Bruno Costa",     "password": "pass123" },
+    { "id": "u7", "username": "vale",     "email": "vale@mail.com",     "role": "user",        "displayName": "Valeria Soto",    "password": "pass123" },
+    { "id": "u8", "username": "emma",     "email": "emma@mail.com",     "role": "user",        "displayName": "Emma Diaz",       "password": "pass123" },
+    { "id": "u9", "username": "ana",      "email": "ana@mail.com",      "role": "admin",       "displayName": "Ana Admin",       "password": "pass123" },
+    { "id": "u10","username": "leo",      "email": "leo@mail.com",      "role": "admin",       "displayName": "Leo Admin",       "password": "pass123" }
+  ],
+  "products": [
+    {
+      "id": "p-101",
+      "ownerId": "u1",
+      "title": "Auriculares inalámbricos",
+      "description": "Bluetooth 5.3 con cancelación de ruido",
+      "category": "electronic",
+      "price": 59999,
+      "discountPercentage": 10,
+      "stock": 25,
+      "brand": "SoundPro",
+      "tags": ["audio", "wireless"],
+      "images": ["https://picsum.photos/seed/auris/800"],
+      "thumbnail": "https://picsum.photos/seed/auris/400",
+      "weight": 0.35,
+      "warrantyInformation": "Garantía 12 meses",
+      "shippingInformation": "Gratis en compras desde $150000",
+      "physical": true,
+      "store": [
+        { "id": "s-u1-1", "address": "Calle 123", "city": "Buenos Aires", "country": "Argentina", "phone": "+54 11 1234 5678" }
+      ]
+    },
+    {
+      "id": "p-102",
+      "ownerId": "u1",
+      "title": "Mouse inalámbrico",
+      "description": "Sensor óptico 1600 DPI recargable USB-C",
+      "category": "electronic",
+      "price": 18999,
+      "discountPercentage": 5,
+      "stock": 40,
+      "brand": "Clicky",
+      "tags": ["mouse", "pc"],
+      "images": ["https://picsum.photos/seed/mouse/800"],
+      "thumbnail": "https://picsum.photos/seed/mouse/400",
+      "weight": 0.25,
+      "warrantyInformation": "Garantía 12 meses",
+      "shippingInformation": "Desde $1500 en AMBA",
+      "physical": true,
+      "store": [
+        { "id": "s-u1-1", "address": "Calle 123", "city": "Buenos Aires", "country": "Argentina", "phone": "+54 11 1234 5678" }
+      ]
+    },
+    {
+      "id": "p-201",
+      "ownerId": "u2",
+      "title": "Zapatillas running",
+      "description": "Amortiguación liviana y transpirable",
+      "category": "sports",
+      "price": 84999,
+      "discountPercentage": 0,
+      "stock": 8,
+      "brand": "FlyRun",
+      "tags": ["calzado", "outdoor"],
+      "images": ["https://picsum.photos/seed/run/800"],
+      "thumbnail": "https://picsum.photos/seed/run/400",
+      "weight": 0.9,
+      "warrantyInformation": "Garantía 6 meses",
+      "shippingInformation": "Gratis en compras desde $120000",
+      "physical": true,
+      "store": [
+        { "id": "s-u2-1", "address": "Av. Siempre Viva 742", "city": "Córdoba", "country": "Argentina", "phone": "+54 351 555 0000" }
+      ]
+    },
+    {
+      "id": "p-202",
+      "ownerId": "u2",
+      "title": "Remera deportiva",
+      "description": "Tela dry-fit, costuras planas",
+      "category": "sports",
+      "price": 18999,
+      "discountPercentage": 15,
+      "stock": 30,
+      "brand": "Athletix",
+      "tags": ["indumentaria", "fitness"],
+      "images": ["https://picsum.photos/seed/remera/800"],
+      "thumbnail": "https://picsum.photos/seed/remera/400",
+      "weight": 0.2,
+      "warrantyInformation": "Garantía 3 meses",
+      "shippingInformation": "Desde $1200 en AMBA",
+      "physical": true,
+      "store": [
+        { "id": "s-u2-1", "address": "Av. Siempre Viva 742", "city": "Córdoba", "country": "Argentina", "phone": "+54 351 555 0000" }
+      ]
+    },
+    {
+      "id": "p-301",
+      "ownerId": "u3",
+      "title": "Cafetera espresso",
+      "description": "15 bar, cápsulas y molido, apagado automático",
+      "category": "home-appliance",
+      "price": 129999,
+      "discountPercentage": 20,
+      "stock": 12,
+      "brand": "BrewMaster",
+      "tags": ["cocina", "café"],
+      "images": ["https://picsum.photos/seed/cafe/800"],
+      "thumbnail": "https://picsum.photos/seed/cafe/400",
+      "weight": 4.2,
+      "warrantyInformation": "Garantía 12 meses",
+      "shippingInformation": "Peso volumétrico; gratis desde $180000",
+      "physical": true,
+      "store": [
+        { "id": "s-u3-1", "address": "Av. Rivadavia 5000", "city": "Buenos Aires", "country": "Argentina", "phone": "+54 11 4000 1111" }
+      ]
+    },
+    {
+      "id": "p-302",
+      "ownerId": "u3",
+      "title": "Aspiradora robot",
+      "description": "Mapeo láser, app móvil, 120 min de batería",
+      "category": "home-appliance",
+      "price": 199999,
+      "discountPercentage": 18,
+      "stock": 7,
+      "brand": "CleanBot",
+      "tags": ["hogar", "smart"],
+      "images": ["https://picsum.photos/seed/robot/800"],
+      "thumbnail": "https://picsum.photos/seed/robot/400",
+      "weight": 3.5,
+      "warrantyInformation": "Garantía 18 meses",
+      "shippingInformation": "Incluye envío en CABA/GBA",
+      "physical": true,
+      "store": [
+        { "id": "s-u3-1", "address": "Av. Rivadavia 5000", "city": "Buenos Aires", "country": "Argentina", "phone": "+54 11 4000 1111" }
+      ]
+    },
+    {
+      "id": "p-303",
+      "ownerId": "u3",
+      "title": "Licuadora de vidrio",
+      "description": "1000W, 5 velocidades, vaso 1.5L",
+      "category": "home-appliance",
+      "price": 69999,
+      "discountPercentage": 10,
+      "stock": 20,
+      "brand": "KitchenPro",
+      "tags": ["licuadora", "cocina"],
+      "images": ["https://picsum.photos/seed/licuadora/800"],
+      "thumbnail": "https://picsum.photos/seed/licuadora/400",
+      "weight": 2.8,
+      "warrantyInformation": "Garantía 12 meses",
+      "shippingInformation": "Desde $2500, gratis desde $150000",
+      "physical": true,
+      "store": [
+        { "id": "s-u3-1", "address": "Av. Rivadavia 5000", "city": "Buenos Aires", "country": "Argentina", "phone": "+54 11 4000 1111" }
+      ]
+    },
+    {
+      "id": "p-401",
+      "ownerId": "u4",
+      "title": "Monitor 27\" 2K",
+      "description": "IPS 165Hz, FreeSync, 1ms MPRT",
+      "category": "electronic",
+      "price": 249999,
+      "discountPercentage": 12,
+      "stock": 10,
+      "brand": "VisionX",
+      "tags": ["monitor", "gaming"],
+      "images": ["https://picsum.photos/seed/monitor/800"],
+      "thumbnail": "https://picsum.photos/seed/monitor/400",
+      "weight": 4.5,
+      "warrantyInformation": "Garantía 24 meses",
+      "shippingInformation": "Envío con seguro incluido",
+      "physical": true,
+      "store": [
+        { "id": "s-u4-1", "address": "Calle Tech 404", "city": "Rosario", "country": "Argentina", "phone": "+54 341 222 3344" }
+      ]
+    },
+    {
+      "id": "p-402",
+      "ownerId": "u4",
+      "title": "Teclado mecánico",
+      "description": "Switches rojos, RGB, hot-swap",
+      "category": "electronic",
+      "price": 129999,
+      "discountPercentage": 8,
+      "stock": 18,
+      "brand": "KeyLabs",
+      "tags": ["teclado", "gaming"],
+      "images": ["https://picsum.photos/seed/teclado/800"],
+      "thumbnail": "https://picsum.photos/seed/teclado/400",
+      "weight": 0.9,
+      "warrantyInformation": "Garantía 12 meses",
+      "shippingInformation": "Desde $1500; gratis desde $120000",
+      "physical": true,
+      "store": [
+        { "id": "s-u4-1", "address": "Calle Tech 404", "city": "Rosario", "country": "Argentina", "phone": "+54 341 222 3344" }
+      ]
+    },
+    {
+      "id": "p-403",
+      "ownerId": "u4",
+      "title": "Notebook ultrabook",
+      "description": "i7 13a gen, 16GB RAM, 1TB SSD, 14\"",
+      "category": "electronic",
+      "price": 799999,
+      "discountPercentage": 5,
+      "stock": 6,
+      "brand": "SlimBook",
+      "tags": ["notebook", "trabajo"],
+      "images": ["https://picsum.photos/seed/notebook/800"],
+      "thumbnail": "https://picsum.photos/seed/notebook/400",
+      "weight": 1.3,
+      "warrantyInformation": "Garantía 12 meses",
+      "shippingInformation": "Envío express sin cargo",
+      "physical": true,
+      "store": [
+        { "id": "s-u4-1", "address": "Calle Tech 404", "city": "Rosario", "country": "Argentina", "phone": "+54 341 222 3344" }
+      ]
+    }
+  ]
+}

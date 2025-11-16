@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { getRoleGroup } from '../../enum/role';
-import { AuthService } from '../service/auth-managment';
+import { RouterModule } from '@angular/router';
+import { getRoleGroup } from '../../../enum/role';
+import { AuthService } from '../../service/auth-managment';
 
 @Component({
   selector: 'app-account-menu',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './account-menu.html',
   styleUrl: './account-menu.css',
 })

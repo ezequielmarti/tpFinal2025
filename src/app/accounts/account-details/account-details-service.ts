@@ -30,6 +30,54 @@ export class AccountDetailsService {
       error: null
     }));
 
+    if (!Url) {
+      this.http.get<{ users: any[] }>('/mock/db.json')
+      .pipe(
+        tap({
+          next: (res) => {
+            const current = this.authService.authState().username;
+            const user = res.users.find(u => u.username === current);
+            if (!user) {
+              this.accountState.update(() => ({
+                data: null,
+                loading: false,
+                error: 'Usuario no encontrado (mock)'
+              }));
+              return;
+            }
+            this.accountState.update((state) => {
+              // map mock user into AccountSchema shape mínimamente
+              const data: AccountSchema = {
+                email: user.email,
+                username: user.username,
+                meta: { created: new Date(), updated: new Date() },
+                userProfile: undefined,
+                businessProfile: undefined,
+                adminProfile: user.role === 'admin' ? { publicName: user.displayName } : undefined,
+                address: [],
+                store: []
+              };
+              return {
+                ...state,
+                data,
+                loading: false,
+                error: null
+              };
+            });
+          }
+        }),
+        catchError((err) => {
+          this.accountState.update(() => ({
+            data: null,
+            loading: false,
+            error: err.error?.error || 'Error cargando los datos'
+          }));
+          return of(null);
+        })
+      ).subscribe();
+      return;
+    }
+
     withAuthRetry<{data: AccountSchema}>(() =>
       this.http.get<{data: AccountSchema}>(`${this.apiUrl}`, {withCredentials: true}),
       this.authService

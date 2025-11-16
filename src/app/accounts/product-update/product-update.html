@@ -1,1 +1,36 @@
-<p>product-update works!</p>
+@let product = productSignal.productState();
+
+<section class="product-update">
+  @if(product.loading){
+    <p>Cargando producto...</p>
+  }@else if(product.error){
+    <div class="alert error">Error: {{ product.error }}</div>
+  }@else if(!product.data){
+    <p class="muted">No hay producto seleccionado.</p>
+  }@else{
+    <header class="page-header">
+      <div>
+        <h2>Editar producto</h2>
+        <p class="muted">{{ product.data.title }}</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h3>Datos principales</h3>
+      <div class="grid">
+        <label>Título<input [value]="product.data.title" /></label>
+        <label>Precio<input type="number" [value]="product.data.price" /></label>
+        <label>Stock<input type="number" [value]="product.data.stock" /></label>
+        <label>Descuento %<input type="number" [value]="product.data.discountPercentage" /></label>
+      </div>
+      <label>Descripción<textarea rows="3">{{ product.data.description }}</textarea></label>
+      <div class="inline">
+        <label>Categoría<input [value]="product.data.category" /></label>
+        <label>Marca<input [value]="product.data.brand" /></label>
+      </div>
+      <div class="form-actions">
+        <button class="btn primary" type="button" (click)="onSubmit()" disabled>Guardar</button>
+      </div>
+    </section>
+  }
+</section>

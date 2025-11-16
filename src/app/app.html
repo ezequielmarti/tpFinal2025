@@ -1,8 +1,13 @@
 @let auth = authSignal.authState();
 
-@if(!auth.error){
-    aca es mas complejo despues lo veo
-}@else{
-    mostrar el mensaje de error
-}
-<router-outlet />
+<main class="layout">
+  <app-nav />
+
+  <div class="container">
+    @if(auth.error){
+      <div class="alert error">Hubo un problema con la sesión: {{ auth.error }}</div>
+    }
+
+    <router-outlet />
+  </div>
+</main>
