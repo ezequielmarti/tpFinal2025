@@ -1,0 +1,28 @@
+[
+  {
+    "id": "p-101",
+    "title": "Auriculares inalámbricos",
+    "description": "Bluetooth 5.3 con cancelación de ruido",
+    "category": "electronic",
+    "price": 59999,
+    "discountPercentage": 10,
+    "stock": 25,
+    "brand": "SoundPro",
+    "tags": ["audio", "wireless"],
+    "images": ["https://picsum.photos/seed/auris/600"],
+    "thumbnail": "https://picsum.photos/seed/auris/300"
+  },
+  {
+    "id": "p-102",
+    "title": "Mouse inalámbrico",
+    "description": "Sensor óptico 1600 DPI recargable USB-C",
+    "category": "electronic",
+    "price": 18999,
+    "discountPercentage": 5,
+    "stock": 40,
+    "brand": "Clicky",
+    "tags": ["mouse", "pc"],
+    "images": ["https://picsum.photos/seed/mouse/600"],
+    "thumbnail": "https://picsum.photos/seed/mouse/300"
+  }
+]

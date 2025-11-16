@@ -1,1 +1,45 @@
-<p>products-managment works!</p>
+<section class="admin-products">
+  <header class="page-header">
+    <div>
+      <h2>Gestión de productos</h2>
+      <p class="muted">Buscar, bloquear o habilitar productos.</p>
+    </div>
+    <form class="inline" novalidate>
+      <input type="search" placeholder="Buscar producto o id" />
+      <button type="button" class="btn">Buscar</button>
+    </form>
+  </header>
+
+  <section class="card">
+    <h3>Resultados de búsqueda</h3>
+    <p class="muted">Muestra lo que devuelva el search.</p>
+    <ul class="list">
+      <li>
+        <div>
+          <strong>Producto demo</strong>
+          <div class="muted">ID: prod-1</div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn danger">Deshabilitar</button>
+          <button type="button" class="btn ghost">Banear cuenta</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h3>Productos bloqueados</h3>
+    <ul class="list">
+      <li>
+        <div>
+          <strong>Producto bloqueado</strong>
+          <div class="muted">ID: prod-2</div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn">Habilitar</button>
+          <button type="button" class="btn ghost">Eliminar</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+</section>

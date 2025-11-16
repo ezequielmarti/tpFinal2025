@@ -1,0 +1,110 @@
+.account-products {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.owner-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.owner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.owner-card__media {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
+  margin: 0 auto;
+}
+
+.owner-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.owner-card__header h3 {
+  margin: 0;
+}
+
+.owner-card__title {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.owner-card__price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.3rem 0;
+}
+
+.owner-card__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 0.25rem 0.8rem;
+  padding: 0.4rem;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.owner-card__stats div {
+  display: flex;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  justify-content: space-between;
+}
+
+.owner-card__updates {
+  margin-top: 0.4rem;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f8fafc;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.owner-card__updates h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.update-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 100px;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.update-label {
+  font-weight: 600;
+}
+
+.owner-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}

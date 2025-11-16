@@ -31,10 +31,38 @@ export class AccountProductService {
       error: null
     }));
 
-    withAuthRetry<PartialProductSchema[]>(() =>
-      this.http.get<PartialProductSchema[]>(`${this.apiUrl}/user/list`, {withCredentials: true}),
-      this.authService
-    ).pipe(
+    if (!Url) {
+      this.http.get<{ users: Array<{ id: string; username: string }>; products: PartialProductSchema[] }>('/mock/db.json')
+      .pipe(
+        tap({
+          next: (res) => {
+            const currentUser = this.authService.authState().username;
+            const user = res.users.find(u => u.username === currentUser);
+            const list = user ? res.products.filter(p => (p as any).ownerId === user.id) : [];
+            this.accountProductsState.update((state) => ({
+              ...state,
+              data: list,
+              loading: false
+            }));
+          }
+        }),
+        catchError((err) => {
+          this.accountProductsState.update((state) => ({
+            ...state,
+            loading: false,
+            error: err.error?.message || 'Error al cargar los productos'
+          }));
+          return of(null);
+        })
+      ).subscribe();
+      return;
+    }
+
+    const endpoint = `${this.apiUrl}/user/list`;
+    const requestFn = () =>
+      this.http.get<PartialProductSchema[]>(endpoint, { withCredentials: true });
+
+    withAuthRetry<PartialProductSchema[]>(requestFn, this.authService).pipe(
       tap({
         next: (result) => {
           this.accountProductsState.update((state) => ({

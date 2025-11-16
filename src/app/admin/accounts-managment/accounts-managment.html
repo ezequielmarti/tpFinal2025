@@ -1,1 +1,44 @@
-<p>accounts-managment works!</p>
+<section class="admin-accounts">
+  <header class="page-header">
+    <div>
+      <h2>Gestión de cuentas</h2>
+      <p class="muted">Buscar usuarios, banear o desbanear.</p>
+    </div>
+    <form class="inline" novalidate>
+      <input type="search" placeholder="Buscar usuario o email" />
+      <button type="button" class="btn">Buscar</button>
+    </form>
+  </header>
+
+  <section class="card">
+    <h3>Resultados de búsqueda</h3>
+    <p class="muted">Muestra la lista devuelta por la API.</p>
+    <ul class="list">
+      <li>
+        <div>
+          <strong>usuario_demo</strong>
+          <div class="muted">demo@mail.com</div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn danger">Banear</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h3>Usuarios baneados</h3>
+    <ul class="list">
+      <li>
+        <div>
+          <strong>usuario_baneado</strong>
+          <div class="muted">baneado@mail.com</div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn">Desbanear</button>
+          <button type="button" class="btn ghost">Eliminar</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+</section>
