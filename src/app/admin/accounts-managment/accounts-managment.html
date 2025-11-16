@@ -1,44 +1,64 @@
-<section class="admin-accounts">
-  <header class="page-header">
-    <div>
-      <h2>Gestión de cuentas</h2>
-      <p class="muted">Buscar usuarios, banear o desbanear.</p>
-    </div>
-    <form class="inline" novalidate>
-      <input type="search" placeholder="Buscar usuario o email" />
-      <button type="button" class="btn">Buscar</button>
-    </form>
-  </header>
+@let state = svc.state();
 
-  <section class="card">
-    <h3>Resultados de búsqueda</h3>
-    <p class="muted">Muestra la lista devuelta por la API.</p>
-    <ul class="list">
-      <li>
-        <div>
-          <strong>usuario_demo</strong>
-          <div class="muted">demo@mail.com</div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn danger">Banear</button>
-        </div>
-      </li>
-    </ul>
-  </section>
+@if(!isAdmin()){
+  <div class="alert error">No tienes permisos para ver esta seccion.</div>
+}@else{
+  <section class="admin-accounts">
+    <header class="page-header">
+      <div>
+        <h2>Gestion de cuentas</h2>
+        <p class="muted">Listado de usuarios (sin admins) y acciones de ban.</p>
+      </div>
+      <button type="button" class="btn ghost" (click)="svc.load()" [disabled]="state.loading">Recargar</button>
+    </header>
 
-  <section class="card">
-    <h3>Usuarios baneados</h3>
-    <ul class="list">
-      <li>
-        <div>
-          <strong>usuario_baneado</strong>
-          <div class="muted">baneado@mail.com</div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn">Desbanear</button>
-          <button type="button" class="btn ghost">Eliminar</button>
-        </div>
-      </li>
-    </ul>
+    @if(state.loading){
+      <p>Cargando...</p>
+    }@else if(state.error){
+      <div class="alert error">{{ state.error }}</div>
+    }@else{
+      <section class="card">
+        <h3>Usuarios activos</h3>
+        @if(!state.users.length){
+          <p class="muted">Sin usuarios activos.</p>
+        }@else{
+          <ul class="list">
+            @for (user of state.users; track user.id) {
+              <li>
+                <div>
+                  <strong>{{ user.username }}</strong>
+                  <div class="muted">{{ user.email }} · Rol: {{ user.role }}</div>
+                </div>
+                <div class="actions">
+                  <button type="button" class="btn danger" (click)="svc.ban(user.id)">Banear</button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Usuarios baneados</h3>
+        @if(!state.banned.length){
+          <p class="muted">No hay usuarios baneados.</p>
+        }@else{
+          <ul class="list">
+            @for (user of state.banned; track user.id) {
+              <li>
+                <div>
+                  <strong>{{ user.username }}</strong>
+                  <div class="muted">{{ user.email }} · Rol: {{ user.role }}</div>
+                </div>
+                <div class="actions">
+                  <button type="button" class="btn" (click)="svc.unban(user.id)">Desbanear</button>
+                  <button type="button" class="btn ghost" (click)="svc.remove(user.id)">Eliminar</button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
   </section>
-</section>
+}

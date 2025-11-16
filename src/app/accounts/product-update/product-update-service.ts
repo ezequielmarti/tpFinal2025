@@ -3,7 +3,7 @@ import { Url } from "../../../common/const";
 import { HttpClient } from "@angular/common/http";
 import { AuthService } from "../../service/auth-managment";
 import { UpdateProduct } from "../../../schema/Product/createProduct";
-import { catchError, of, tap } from "rxjs";
+import { catchError, of, tap, map } from "rxjs";
 import { ProductSchema } from "../../../schema/Product/product";
 import { withAuthRetry } from "../../../helpers/http-helper";
 
@@ -29,26 +29,58 @@ export class ProductUpdateService {
       error: null
     }));
 
+    // Modo mock/local: leer de db.json para evitar errores de parse cuando Url está vacío
+    if (!Url) {
+      this.http.get<{ products: any[] }>('/mock/db.json')
+        .pipe(
+          map(res => res.products.find(p => p.id === productId)),
+          tap((product) => {
+            if (!product) {
+              this.productState.update(() => ({
+                data: null,
+                loading: false,
+                error: 'Producto no encontrado (mock)'
+              }));
+              return;
+            }
+            this.productState.update(() => ({
+              data: product as ProductSchema,
+              loading: false,
+              error: null
+            }));
+          }),
+          catchError((err) => {
+            this.productState.update(() => ({
+              data: null,
+              loading: false,
+              error: err.error?.error || 'Error al cargar el producto (mock)'
+            }));
+            return of(null);
+          })
+        ).subscribe();
+      return;
+    }
+
     this.http.get<{data: ProductSchema}>(`${this.apiUrl}/${productId}`)
-    .pipe(
-      tap({
-        next: (response) => {
+      .pipe(
+        tap({
+          next: (response) => {
+            this.productState.update(() => ({
+              data: response.data,
+              loading: false,
+              error: null
+            }));
+          }
+        }),
+        catchError((err) => {
           this.productState.update(() => ({
-            data: response.data,
+            data: null,
             loading: false,
-            error: null
+            error: err.error?.error || 'Error al cargar el producto'
           }));
-        }
-      }),
-      catchError((err) => {
-        this.productState.update(() => ({
-          data: null,
-          loading: false,
-          error: err.error?.error || 'Error al cargar el producto'
-        }));
-        return of(null);
-      })
-    ).subscribe();
+          return of(null);
+        })
+      ).subscribe();
   }
 
   updateProduct(product: UpdateProduct) {
@@ -57,6 +89,18 @@ export class ProductUpdateService {
       loading: true,
       error: null
     }));
+
+    if (!Url) {
+      this.productState.update((state) => {
+        const merged = state.data ? { ...state.data, ...product } : null;
+        return {
+          data: merged,
+          loading: false,
+          error: null
+        };
+      });
+      return;
+    }
 
     withAuthRetry<ProductSchema>(() =>
       this.http.put<ProductSchema>(`${this.apiUrl}`, product, { withCredentials: true }),

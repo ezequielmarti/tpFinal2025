@@ -22,4 +22,12 @@ export class ProductDetails implements OnInit {
       this.productSignal.getProduct(id);
     }
   }
+
+  isOwner(): boolean {
+    const auth = this.authSignal.authState();
+    const prod = this.productSignal.productState().data;
+    if (!auth.logged || !prod) return false;
+    // El backend no expone ownerId en el schema, usamos el accountName como identificador visible
+    return !!(auth.username && prod.accountName && prod.accountName.toLowerCase() === auth.username.toLowerCase());
+  }
 }

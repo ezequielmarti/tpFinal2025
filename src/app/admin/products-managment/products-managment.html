@@ -1,45 +1,65 @@
-<section class="admin-products">
-  <header class="page-header">
-    <div>
-      <h2>Gestión de productos</h2>
-      <p class="muted">Buscar, bloquear o habilitar productos.</p>
-    </div>
-    <form class="inline" novalidate>
-      <input type="search" placeholder="Buscar producto o id" />
-      <button type="button" class="btn">Buscar</button>
-    </form>
-  </header>
+@let state = svc.state();
 
-  <section class="card">
-    <h3>Resultados de búsqueda</h3>
-    <p class="muted">Muestra lo que devuelva el search.</p>
-    <ul class="list">
-      <li>
-        <div>
-          <strong>Producto demo</strong>
-          <div class="muted">ID: prod-1</div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn danger">Deshabilitar</button>
-          <button type="button" class="btn ghost">Banear cuenta</button>
-        </div>
-      </li>
-    </ul>
-  </section>
+@if(!isAdmin()){
+  <div class="alert error">No tienes permisos para ver esta seccion.</div>
+}@else{
+  <section class="admin-products">
+    <header class="page-header">
+      <div>
+        <h2>Gestion de productos</h2>
+        <p class="muted">Lista completa y acciones de bloqueo/habilitacion.</p>
+      </div>
+      <button type="button" class="btn ghost" (click)="svc.load()" [disabled]="state.loading">Recargar</button>
+    </header>
 
-  <section class="card">
-    <h3>Productos bloqueados</h3>
-    <ul class="list">
-      <li>
-        <div>
-          <strong>Producto bloqueado</strong>
-          <div class="muted">ID: prod-2</div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn">Habilitar</button>
-          <button type="button" class="btn ghost">Eliminar</button>
-        </div>
-      </li>
-    </ul>
+    @if(state.loading){
+      <p>Cargando productos...</p>
+    }@else if(state.error){
+      <div class="alert error">{{ state.error }}</div>
+    }@else{
+      <section class="card">
+        <h3>Productos activos</h3>
+        @if(!state.products.length){
+          <p class="muted">Sin productos activos.</p>
+        }@else{
+          <ul class="list">
+            @for (prod of state.products; track prod.id) {
+              <li>
+                <div>
+                  <strong>{{ prod.title }}</strong>
+                  <div class="muted">ID: {{ prod.id }} · Dueño: {{ prod.ownerId || 'n/d' }}</div>
+                </div>
+                <div class="actions">
+                  <button type="button" class="btn danger" (click)="svc.disableProduct(prod.id)">Deshabilitar</button>
+                  <button type="button" class="btn ghost" (click)="svc.banOwner(prod.ownerId)">Banear cuenta</button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="card">
+        <h3>Productos bloqueados</h3>
+        @if(!state.blocked.length){
+          <p class="muted">No hay productos bloqueados.</p>
+        }@else{
+          <ul class="list">
+            @for (prod of state.blocked; track prod.id) {
+              <li>
+                <div>
+                  <strong>{{ prod.title }}</strong>
+                  <div class="muted">ID: {{ prod.id }} · Dueño: {{ prod.ownerId || 'n/d' }}</div>
+                </div>
+                <div class="actions">
+                  <button type="button" class="btn" (click)="svc.enableProduct(prod.id)">Habilitar</button>
+                  <button type="button" class="btn ghost" (click)="svc.removeProduct(prod.id)">Eliminar</button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
   </section>
-</section>
+}

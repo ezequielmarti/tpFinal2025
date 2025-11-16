@@ -2,7 +2,9 @@
 @let auth = authSignal.authState();
 
 <section class="account-details">
-  @if(account.loading){
+  @if(!auth.role){
+    <p>Cargando perfil...</p>
+  }@else if(account.loading){
     <p>Cargando datos de tu cuenta...</p>
   }@else if (account.error){
     <div class="alert error">Error: {{ account.error }}</div>
@@ -12,7 +14,7 @@
     <header class="page-header">
       <div>
         <h2>Mi cuenta</h2>
-        <p class="muted">Datos del perfil y direcciones</p>
+        <p class="muted">Datos de perfil, direcciones y locales</p>
       </div>
       <div class="actions">
         @if(!edit){
@@ -26,38 +28,84 @@
     @switch(getRoleGroup(auth.role!)){
       @case ('user') {
         @if(!edit){
+          <div class="details-grid">
+            <section class="card stretch">
+              <h3>Datos personales</h3>
+              <dl class="meta two-cols">
+                <div><dt>Nombre</dt><dd>{{ account.data.userProfile?.firstname }} {{ account.data.userProfile?.lastname }}</dd></div>
+                <div><dt>Usuario</dt><dd>{{ account.data.username }}</dd></div>
+                <div><dt>Email</dt><dd>{{ account.data.email }}</dd></div>
+                <div><dt>Telefono</dt><dd>{{ account.data.userProfile?.phone || '-' }}</dd></div>
+                <div><dt>Fecha nac.</dt><dd>{{ account.data.userProfile?.birth || '-' }}</dd></div>
+              </dl>
+            </section>
+
+            <section class="card stretch">
+              <h3>Direcciones</h3>
+              @if(account.data.address?.length){
+                <ul class="list padded">
+                  @for (addr of account.data.address; track addr.id) {
+                    <li>
+                      <strong>{{ addr.address }}</strong>
+                      <div class="muted">{{ addr.city }} ({{ addr.zip }}) - {{ addr.country }}</div>
+                      <div class="muted">Depto: {{ addr.apartment || '-' }}</div>
+                    </li>
+                  }
+                </ul>
+              }@else{
+                <p class="muted">Aun no agregaste direcciones.</p>
+              }
+            </section>
+
+            <section class="card stretch">
+              <h3>Locales</h3>
+              @if(account.data.store?.length){
+                <ul class="list padded">
+                  @for (store of account.data.store; track store.id) {
+                    <li>
+                      <strong>{{ store.address.address }}</strong>
+                      <div class="muted">{{ store.address.city }} - {{ store.address.country }}</div>
+                      <div class="muted">Tel: {{ store.phone || '-' }}</div>
+                    </li>
+                  }
+                </ul>
+              }@else{
+                <p class="muted">Sin locales cargados.</p>
+              }
+            </section>
+          </div>
+        }@else {
           <section class="card">
-            <h3>Datos personales</h3>
-            <dl class="meta">
-              <div><dt>Nombre</dt><dd>{{ account.data.userProfile?.firstname }} {{ account.data.userProfile?.lastname }}</dd></div>
-              <div><dt>Usuario</dt><dd>{{ account.data.username }}</dd></div>
-              <div><dt>Email</dt><dd>{{ account.data.email }}</dd></div>
-              <div><dt>Teléfono</dt><dd>{{ account.data.userProfile?.phone || '—' }}</dd></div>
-              <div><dt>Fecha nac.</dt><dd>{{ account.data.userProfile?.birth || '—' }}</dd></div>
+            <h3>Editar perfil</h3>
+            <p class="muted">Completa los datos y guarda para actualizar.</p>
+            <div class="inline">
+              <label>Nombre<input placeholder="{{ account.data.userProfile?.firstname }}" /></label>
+              <label>Apellido<input placeholder="{{ account.data.userProfile?.lastname }}" /></label>
+              <label>Telefono<input placeholder="{{ account.data.userProfile?.phone || 'Sin telefono' }}" /></label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" disabled>Guardar</button>
+              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+            </div>
+          </section>
+        }
+      }
+      @case ('business') {
+        <div class="details-grid">
+          <section class="card stretch">
+            <h3>Perfil de negocio</h3>
+            <dl class="meta two-cols">
+              <div><dt>Nombre publico</dt><dd>{{ account.data.businessProfile?.title }}</dd></div>
+              <div><dt>Bio</dt><dd>{{ account.data.businessProfile?.bio || '-' }}</dd></div>
+              <div><dt>Contacto</dt><dd>{{ account.data.businessProfile?.contactEmail }}</dd></div>
+              <div><dt>Telefono</dt><dd>{{ account.data.businessProfile?.phone }}</dd></div>
             </dl>
           </section>
 
-          <section class="card">
-            <h3>Direcciones</h3>
-            @if(account.data.address?.length){
-              <ul class="list">
-                @for (addr of account.data.address; track addr.id) {
-                  <li>
-                    <strong>{{ addr.address }}</strong>
-                    <div class="muted">{{ addr.city }} ({{ addr.zip }}) - {{ addr.country }}</div>
-                    <div class="muted">Depto: {{ addr.apartment }}</div>
-                  </li>
-                }
-              </ul>
-            }@else{
-              <p class="muted">Aún no agregaste direcciones.</p>
-            }
-          </section>
-
-          <section class="card">
+          <section class="card stretch">
             <h3>Locales</h3>
             @if(account.data.store?.length){
-              <ul class="list">
+              <ul class="list padded">
                 @for (store of account.data.store; track store.id) {
                   <li>
                     <strong>{{ store.address.address }}</strong>
@@ -70,55 +118,13 @@
               <p class="muted">Sin locales cargados.</p>
             }
           </section>
-        }@else {
-          <section class="card">
-            <h3>Editar perfil</h3>
-            <p class="muted">Formulario pendiente de implementar.</p>
-            <div class="inline">
-              <label>Nombre<input placeholder="{{ account.data.userProfile?.firstname }}" /></label>
-              <label>Apellido<input placeholder="{{ account.data.userProfile?.lastname }}" /></label>
-              <label>Teléfono<input placeholder="{{ account.data.userProfile?.phone || 'Sin teléfono' }}" /></label>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
-            </div>
-          </section>
-        }
-      }
-      @case ('business') {
-        <section class="card">
-          <h3>Perfil de negocio</h3>
-          <dl class="meta">
-            <div><dt>Nombre público</dt><dd>{{ account.data.businessProfile?.title }}</dd></div>
-            <div><dt>Bio</dt><dd>{{ account.data.businessProfile?.bio || '—' }}</dd></div>
-            <div><dt>Contacto</dt><dd>{{ account.data.businessProfile?.contactEmail }}</dd></div>
-            <div><dt>Teléfono</dt><dd>{{ account.data.businessProfile?.phone }}</dd></div>
-          </dl>
-        </section>
-
-        <section class="card">
-          <h3>Locales</h3>
-          @if(account.data.store?.length){
-            <ul class="list">
-              @for (store of account.data.store; track store.id) {
-                <li>
-                  <strong>{{ store.address.address }}</strong>
-                  <div class="muted">{{ store.address.city }} - {{ store.address.country }}</div>
-                  <div class="muted">Tel: {{ store.phone }}</div>
-                </li>
-              }
-            </ul>
-          }@else{
-            <p class="muted">Sin locales cargados.</p>
-          }
-        </section>
+        </div>
       }
       @case ('admin') {
-        <section class="card">
+        <section class="card stretch">
           <h3>Perfil administrador</h3>
-          <dl class="meta">
-            <div><dt>Nombre público</dt><dd>{{ account.data.adminProfile?.publicName }}</dd></div>
+          <dl class="meta two-cols">
+            <div><dt>Nombre publico</dt><dd>{{ account.data.adminProfile?.publicName }}</dd></div>
             <div><dt>Usuario</dt><dd>{{ account.data.username }}</dd></div>
             <div><dt>Email</dt><dd>{{ account.data.email }}</dd></div>
           </dl>
