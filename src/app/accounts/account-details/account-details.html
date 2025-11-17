@@ -25,6 +25,21 @@
       </div>
     </header>
 
+    <section class="card summary">
+      <div>
+        <p class="muted">Usuario</p>
+        <h3>{{ account.data.username }}</h3>
+      </div>
+      <div>
+        <p class="muted">Email</p>
+        <h3>{{ account.data.email }}</h3>
+      </div>
+      <div>
+        <p class="muted">Rol</p>
+        <span class="badge muted">{{ auth.role }}</span>
+      </div>
+    </section>
+
     @switch(getRoleGroup(auth.role!)){
       @case ('user') {
         @if(!edit){
@@ -56,23 +71,6 @@
                 <p class="muted">Aun no agregaste direcciones.</p>
               }
             </section>
-
-            <section class="card stretch">
-              <h3>Locales</h3>
-              @if(account.data.store?.length){
-                <ul class="list padded">
-                  @for (store of account.data.store; track store.id) {
-                    <li>
-                      <strong>{{ store.address.address }}</strong>
-                      <div class="muted">{{ store.address.city }} - {{ store.address.country }}</div>
-                      <div class="muted">Tel: {{ store.phone || '-' }}</div>
-                    </li>
-                  }
-                </ul>
-              }@else{
-                <p class="muted">Sin locales cargados.</p>
-              }
-            </section>
           </div>
         }@else {
           <section class="card">
@@ -82,6 +80,70 @@
               <label>Nombre<input placeholder="{{ account.data.userProfile?.firstname }}" /></label>
               <label>Apellido<input placeholder="{{ account.data.userProfile?.lastname }}" /></label>
               <label>Telefono<input placeholder="{{ account.data.userProfile?.phone || 'Sin telefono' }}" /></label>
+              <label>Fecha nac.<input type="date" /></label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" disabled>Guardar</button>
+              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+            </div>
+            @if(auth.role === Role.User){
+              <div class="seller-upgrade card muted">
+                <h4>Quiero vender</h4>
+                <p class="muted">Completa tus datos comerciales para pasar a cuenta seller.</p>
+                <div class="inline">
+                  <label>Nombre publico<input placeholder="Tu marca" /></label>
+                  <label>Correo de contacto<input type="email" placeholder="contacto@tienda.com" /></label>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn" disabled>Solicitar cambio a seller</button>
+                </div>
+              </div>
+            }@else{
+              <p class="muted">Tu cuenta ya es seller. Pronto podras editar datos de negocio aqui.</p>
+            }
+          </section>
+        }
+      }
+      @case ('business') {
+        @if(!edit){
+          <div class="details-grid">
+            <section class="card stretch">
+              <h3>Perfil de negocio</h3>
+              <dl class="meta two-cols">
+                <div><dt>Nombre publico</dt><dd>{{ account.data.businessProfile?.title }}</dd></div>
+                <div><dt>Bio</dt><dd>{{ account.data.businessProfile?.bio || '-' }}</dd></div>
+                <div><dt>Contacto</dt><dd>{{ account.data.businessProfile?.contactEmail }}</dd></div>
+                <div><dt>Telefono</dt><dd>{{ account.data.businessProfile?.phone }}</dd></div>
+              </dl>
+            </section>
+
+            <section class="card stretch">
+              <h3>Locales</h3>
+              @if(account.data.store?.length){
+                <ul class="list padded">
+                  @for (store of account.data.store; track store.id) {
+                    <li>
+                      <strong>{{ store.address.address }}</strong>
+                      <div class="muted">{{ store.address.city }} - {{ store.address.country }}</div>
+                      <div class="muted">Tel: {{ store.phone }}</div>
+                    </li>
+                  }
+                </ul>
+              }@else{
+                <p class="muted">Sin locales cargados.</p>
+              }
+            </section>
+          </div>
+        }@else{
+          <section class="card">
+            <h3>Editar negocio</h3>
+            <div class="inline">
+              <label>Nombre publico<input placeholder="{{ account.data.businessProfile?.title }}" /></label>
+              <label>Correo de contacto<input type="email" placeholder="{{ account.data.businessProfile?.contactEmail }}" /></label>
+            </div>
+            <label>Bio<textarea rows="3" placeholder="{{ account.data.businessProfile?.bio || 'Sin bio' }}"></textarea></label>
+            <div class="inline">
+              <label>Telefono<input placeholder="{{ account.data.businessProfile?.phone }}" /></label>
             </div>
             <div class="form-actions">
               <button type="button" class="btn" disabled>Guardar</button>
@@ -90,45 +152,29 @@
           </section>
         }
       }
-      @case ('business') {
-        <div class="details-grid">
+      @case ('admin') {
+        @if(!edit){
           <section class="card stretch">
-            <h3>Perfil de negocio</h3>
+            <h3>Perfil administrador</h3>
             <dl class="meta two-cols">
-              <div><dt>Nombre publico</dt><dd>{{ account.data.businessProfile?.title }}</dd></div>
-              <div><dt>Bio</dt><dd>{{ account.data.businessProfile?.bio || '-' }}</dd></div>
-              <div><dt>Contacto</dt><dd>{{ account.data.businessProfile?.contactEmail }}</dd></div>
-              <div><dt>Telefono</dt><dd>{{ account.data.businessProfile?.phone }}</dd></div>
+              <div><dt>Nombre publico</dt><dd>{{ account.data.adminProfile?.publicName }}</dd></div>
+              <div><dt>Usuario</dt><dd>{{ account.data.username }}</dd></div>
+              <div><dt>Email</dt><dd>{{ account.data.email }}</dd></div>
             </dl>
           </section>
-
-          <section class="card stretch">
-            <h3>Locales</h3>
-            @if(account.data.store?.length){
-              <ul class="list padded">
-                @for (store of account.data.store; track store.id) {
-                  <li>
-                    <strong>{{ store.address.address }}</strong>
-                    <div class="muted">{{ store.address.city }} - {{ store.address.country }}</div>
-                    <div class="muted">Tel: {{ store.phone }}</div>
-                  </li>
-                }
-              </ul>
-            }@else{
-              <p class="muted">Sin locales cargados.</p>
-            }
+        }@else{
+          <section class="card">
+            <h3>Editar perfil admin</h3>
+            <div class="inline">
+              <label>Nombre publico<input placeholder="{{ account.data.adminProfile?.publicName }}" /></label>
+              <label>Email<input placeholder="{{ account.data.email }}" /></label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn" disabled>Guardar</button>
+              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+            </div>
           </section>
-        </div>
-      }
-      @case ('admin') {
-        <section class="card stretch">
-          <h3>Perfil administrador</h3>
-          <dl class="meta two-cols">
-            <div><dt>Nombre publico</dt><dd>{{ account.data.adminProfile?.publicName }}</dd></div>
-            <div><dt>Usuario</dt><dd>{{ account.data.username }}</dd></div>
-            <div><dt>Email</dt><dd>{{ account.data.email }}</dd></div>
-          </dl>
-        </section>
+        }
       }
     }
   }
