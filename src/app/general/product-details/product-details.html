@@ -26,7 +26,7 @@
         </div>
 
         <div class="product-hero__info">
-          <p class="muted">{{ product.data.brand }} �� {{ product.data.category }}</p>
+          <p class="muted">{{ product.data.brand }} · {{ product.data.category }}</p>
           <h1>{{ product.data.title }}</h1>
 
           <div class="price-block">
@@ -47,8 +47,8 @@
           <div class="shipping">
             {{
               finalPrice >= 150000
-                ? 'Env��o gratis en tu compra'
-                : (product.data.weight > 3 ? 'Env��o estimado $3500' : 'Env��o estimado $1800')
+                ? 'Envio gratis en tu compra'
+                : (product.data.weight > 3 ? 'Envio estimado $3500' : 'Envio estimado $1800')
             }}
           </div>
 
@@ -63,35 +63,29 @@
               <a class="btn ghost" [routerLink]="['/productUpdate', product.data.id]">Editar producto</a>
             </div>
           }@else{
-            <p class="muted">Inicia sesi��n para comprar o agregar al carrito.</p>
+            <p class="muted">Inicia sesion para comprar o agregar al carrito.</p>
           }
         </div>
       </section>
 
       <section class="card">
-        <h3>Descripci��n</h3>
+        <h3>Descripcion</h3>
         <p>{{ product.data.description }}</p>
       </section>
 
-      @if(getRoleGroup(auth.role!) !== 'user'){
-        <section class="card">
-          <button class="btn ghost" routerLink="/accountProducts">Ir a mis productos</button>
-        </section>
-      }
-
       <section class="card">
-        <h3>Env��o y garant��a</h3>
+        <h3>Envio y garantia</h3>
         <div class="grid">
           <div>
             <p class="muted">Peso</p>
             <strong>{{ product.data.weight }} kg</strong>
           </div>
           <div>
-            <p class="muted">Garant��a</p>
+            <p class="muted">Garantia</p>
             <strong>{{ product.data.warrantyInformation || 'No especificada' }}</strong>
           </div>
           <div>
-            <p class="muted">Env��o</p>
+            <p class="muted">Envio</p>
             <strong>{{ product.data.shippingInformation || 'Consultar' }}</strong>
           </div>
         </div>
@@ -115,31 +109,43 @@
       </section>
 
       <section class="card">
-        <h3>Rese��as</h3>
-        @if(auth.logged){
+        <h3>Resenas</h3>
+        @if(auth.logged && !hasReview()){
           <form class="grid" novalidate>
-            <label>Puntaje (1-10)<input type="number" min="1" max="10" value="10" /></label>
-            <label>Comentario<textarea rows="3" placeholder="Escribe tu experiencia"></textarea></label>
-            <button type="button" class="btn primary" disabled>Enviar rese��a</button>
+            <div class="stars">
+              @for (star of stars; track star) {
+                <button type="button" class="star" [class.filled]="star <= selectedRating" (click)="setRating(star)">★</button>
+              }
+              <span class="muted">{{ selectedRating }} / 5</span>
+            </div>
+            <label>Comentario<textarea #comment rows="3" placeholder="Escribe tu experiencia"></textarea></label>
+            <div class="form-actions">
+              <button type="button" class="btn primary" (click)="submitReview(selectedRating, comment.value)">Enviar resena</button>
+            </div>
           </form>
+        }@else if(auth.logged && hasReview()){
+          <p class="muted">Ya dejaste una resena.</p>
+          <button type="button" class="btn ghost" (click)="deleteReview()">Eliminar mi resena</button>
         }@else{
-          <p class="muted">Inicia sesi��n para dejar una rese��a.</p>
+          <p class="muted">Inicia sesion para dejar una resena.</p>
         }
 
         @if(product.data.reviews?.length){
           <ul class="list">
             @for (review of product.data.reviews; track review.username) {
               <li>
-                <div>
-                  <strong>{{ review.username }}</strong>
-                  <span class="muted">Puntaje: {{ review.rating }}</span>
-                </div>
+                <strong>{{ review.username }}</strong>
                 <p>{{ review.comment || 'Sin comentario' }}</p>
+                <div class="review-rating">
+                  @for (star of stars; track star) {
+                    <span class="star" [class.filled]="review.rating >= star">★</span>
+                  }
+                </div>
               </li>
             }
           </ul>
         }@else{
-          <p class="muted">Sin rese��as aǧn.</p>
+          <p class="muted">Sin resenas aun.</p>
         }
       </section>
     </section>

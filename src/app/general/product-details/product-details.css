@@ -80,3 +80,29 @@
   margin-bottom: 0.6rem;
   font-weight: 600;
 }
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.stars .star,
+.review-rating .star {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #d1d5db;
+  padding: 0;
+}
+
+.stars .star.filled,
+.review-rating .star.filled {
+  color: #f5b301;
+}
+
+.review-rating {
+  display: flex;
+  gap: 0.2rem;
+}

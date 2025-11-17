@@ -46,6 +46,8 @@
     @if(!auth.logged){
       <a class="btn ghost" routerLink="/sign-up">Crear cuenta</a>
       <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl }">Iniciar sesion</a>
+    }@else{
+      <a class="btn ghost" routerLink="/cart">Carrito</a>
     }
   </div>
 </nav>
