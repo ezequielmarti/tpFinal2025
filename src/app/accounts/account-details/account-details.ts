@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
-import { AccountDetailsService } from './account-details.service';
+import { AccountDetailsService } from './account-details-service';
 import { Router } from '@angular/router';
-import { AuthService } from '../../service/auth-managment';
-import { getRoleGroup, Role } from '../../../enum/role';
+import { AuthService } from '../../general/login/auth-managment';
+import { ERole, getRoleGroup } from '../../../enum/role';
+
 
 @Component({
   selector: 'app-account-details',
@@ -17,7 +18,7 @@ export class AccountDetails implements OnInit{
   protected readonly router = inject(Router);
 
   getRoleGroup = getRoleGroup;
-  Role = Role;
+  Role = ERole;
   edit = false;
   isLogged = effect(() => {
     if(!this.authSignal.authState().logged){

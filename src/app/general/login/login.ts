@@ -1,8 +1,8 @@
 import { Component, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../service/auth-managment';
 import { AuthSchema } from '../../../schema/user/auth';
+import { AuthService } from './auth-managment';
 
 @Component({
   selector: 'app-login',

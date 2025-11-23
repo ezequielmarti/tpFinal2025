@@ -2,10 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductDetailsService } from './product-details-service';
-import { AuthService } from '../../service/auth-managment';
-import { getRoleGroup } from '../../../enum/role';
-import { CreateReview } from '../../../schema/Product/createReview';
-import { Role } from '../../../enum/role';
+import { ERole, getRoleGroup } from '../../../enum/role';
+import { AuthService } from '../login/auth-managment';
+import { CreateReviewSchema } from '../../../schema/Product/createReview';
+
 
 @Component({
   selector: 'app-product-details',
@@ -20,7 +20,7 @@ export class ProductDetails implements OnInit {
   getRoleGroup = getRoleGroup;
   stars = [1, 2, 3, 4, 5];
   selectedRating = 5;
-  Role = Role;
+  Role = ERole;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -60,7 +60,7 @@ export class ProductDetails implements OnInit {
     const prod = this.productSignal.productState().data;
     const user = this.myReviewUsername();
     if (!prod || !user) return;
-    const payload: CreateReview = {
+    const payload: CreateReviewSchema = {
       productId: prod.id,
       rating: rating || this.selectedRating || 5,
       comment: comment?.trim() || 'Sin comentario'

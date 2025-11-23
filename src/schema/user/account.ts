@@ -1,57 +1,55 @@
-import { array, date, InferInput, nullable, object, optional, safeParse, string } from "valibot";
-    
-const metaSchema = object({
-    "created": date(),
-    "updated": date()
-});
+import { ERole } from "../../enum/role";
+import { EStatus } from "../../enum/status";
 
-const userSchema = object({
-    "firstname": string(),
-    "lastname": string(),
-    "birth": nullable(date()),
-    "phone": nullable(string())
-});
+export interface PartialAccountSchema {
+    username: string;
+    role: ERole;
+    status: EStatus; 
+}
 
-const businessSchema = object({
-    "title": string(),
-    "bio": nullable(string()),
-    "phone": string(),
-    "contactEmail": string()
-});
+export interface AccountSchema extends PartialAccountSchema {
+    email: string;
+    meta: {
+        created: Date,
+        updated: Date,
+        deletedBy: string | null
+    };
+    userProfile?: UserSchema;
+    businessProfile?: BusinessSchema;
+    adminProfile?: AdminSchema;
+    address?: AddressSchema[];
+    store?: StoreSchema [];
+}
 
-const adminSchema = object({
-    "publicName": string()
-});
+export interface UserSchema {
+    firstname: string;
+    lastname: string;
+    birth?: Date | null;
+    phone?: string | null;
+}
 
-const addressSchema = object({
-    "id": string(),
-    "address": string(),
-    "apartment": string(),
-    "city": string(),
-    "zip": string(),
-    "country": string() 
-});
+export interface BusinessSchema {
+    title: string;
+    bio?: string | null;
+    phone: string;
+    contactEmail: string;
+}
 
-const storeSchema = object({
-    "id": string(),
-    "address": addressSchema,
-    "phone": string()
-});
+export interface AdminSchema {
+    publicName: string;
+}
 
-const accountSchema = object({
-    "email": string(),
-    "username": string(),
-    "meta": metaSchema,
-    "userProfile": optional(userSchema),
-    "businessProfile": optional(businessSchema),
-    "adminProfile": optional(adminSchema),
-    "address": optional(array(addressSchema)),
-    "store": optional(array(storeSchema))
-});
+export interface AddressSchema {
+    id: string;
+    address: string;
+    apartment?: string;
+    city: string;
+    zip: string;
+    country: string;
+}
 
-export type AccountSchema = InferInput<typeof accountSchema>;
-
-export const validateAccount = (imput: unknown) => {
-    return safeParse(accountSchema, imput)
-};
-
+export interface StoreSchema {
+    id: string;
+    address: AddressSchema;
+    phone: string;
+}

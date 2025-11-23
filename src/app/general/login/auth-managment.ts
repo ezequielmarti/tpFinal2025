@@ -1,31 +1,36 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Url } from '../../common/const';
-import { AuthSchema } from '../../schema/user/auth';
-import { catchError, Observable, of, switchMap, tap } from 'rxjs';
-import { Role } from '../../enum/role';
+import { tap, catchError, of, Observable, switchMap } from 'rxjs';
+import { Url } from '../../../common/const';
+import { ERole } from '../../../enum/role';
+import { EStatus } from '../../../enum/status';
+import { PartialAccountSchema } from '../../../schema/user/account';
+import { AuthSchema } from '../../../schema/user/auth';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   
-  private apiUrl = `${Url}/account`;
+  private apiUrl = `${Url}/auth`;
   private http = inject(HttpClient);
 
   authState = signal({
     logged: false,
     username: null as string | null,
-    role: null as Role | null,
+    role: null as ERole | null,
     loading: false,
+    status: null as EStatus | null,
     error: null as string | null
   });
 
-  private setState(): void {
+  setState(): void {
     this.authState.update(() => ({
       logged: false,
       username: null,
       role: null,
+      status: null,
       loading: false,
       error: null
     }));
@@ -39,48 +44,7 @@ export class AuthService {
       error: null
     }));
 
-    if (!Url) {
-      this.http.get<{ users: Array<{ username: string; email: string; password: string; role: Role }> }>('/mock/db.json')
-      .pipe(
-        tap({
-          next: (res) => {
-            const found = res.users.find((u) =>
-              u.username.toLowerCase() === auth.account.toLowerCase() ||
-              u.email.toLowerCase() === auth.account.toLowerCase()
-            );
-
-            if (!found || found.password !== auth.password) {
-              this.authState.update((state) => ({
-                ...state,
-                loading: false,
-                error: 'Credenciales inválidas (mock)'
-              }));
-              return;
-            }
-
-            this.authState.update(() => ({
-              logged: true,
-              username: found.username,
-              role: found.role,
-              loading: false,
-              error: null
-            }));
-          }
-        }),
-        catchError((error) => {
-          this.authState.update((state) => ({
-            ...state,
-            loading: false,
-            error: error.error?.error || 'Error al ingresar (mock)'
-          }));
-          return of(null);
-        })
-      ).subscribe();
-
-      return;
-    }
-
-    this.http.post<{username: string, role: Role}>(`${this.apiUrl}/login`, auth, {withCredentials: true})
+    this.http.post<PartialAccountSchema>(`${this.apiUrl}/login`, { auth }, {withCredentials: true})
     .pipe(
       tap({
         next: (response) => {
@@ -89,15 +53,16 @@ export class AuthService {
             username: response.username,
             role: response.role,
             loading: false,
+            status: response.status,
             error: null
           }));
         }
       }),
-      catchError((error) => {
+      catchError((err) => {
         this.authState.update((state) => ({
           ...state,
           loading: false,
-          error: error.error?.error || 'Error al ingresar'
+          error: err.error?.message || 'Error al ingresar'
         }));
         return of(null);
       })
@@ -112,11 +77,6 @@ export class AuthService {
       error: null
     }));
 
-    if (!Url) {
-      this.setState();
-      return;
-    }
-
     this.http.post<void>(`${this.apiUrl}/logout`, {}, {withCredentials: true})
     .pipe(
       tap({
@@ -124,11 +84,11 @@ export class AuthService {
           this.setState();
         }
       }),
-      catchError((error) => {
+      catchError((err) => {
         this.authState.update((state) => ({
           ...state,
           loading: false,
-          error: error.error?.error || 'Error en logout'
+          error: err.error?.message || 'Error en logout'
         }));
         return of(null);
       })
@@ -143,25 +103,26 @@ export class AuthService {
       error: null
     }));
 
-    return this.http.post<{username: string, role: Role}>(`${this.apiUrl}/refresh`, {}, { withCredentials: true })
+    return this.http.post<PartialAccountSchema>(`${this.apiUrl}/refresh`, {}, { withCredentials: true })
     .pipe(
       tap((response) => {
         this.authState.update(() => ({
           logged: true,
           username: response.username,
           role: response.role,
+          status: response.status,
           loading: false,
           error: null
         }));
       }),
       switchMap(() => of(true)),
-      catchError((error) => {
-        if(error.status !== 500){
+      catchError((err) => {
+        if(err.status !== 500){
           this.setState();
         }
         this.authState.update((state) => ({
           ...state,
-          error: error.error?.error || 'Error al refrescar token'
+          error: err.error?.message || 'Error al refrescar token'
         }));
         return of(false);
       })

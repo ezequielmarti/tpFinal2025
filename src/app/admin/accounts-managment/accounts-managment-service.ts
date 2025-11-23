@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Url } from '../../../common/const';
-const STORAGE_KEY = 'admin.banned.users';
 import { catchError, of, tap } from 'rxjs';
+import { PartialAccountSchema } from '../../../schema/user/account';
+import { withAuthRetry } from '../../../helpers/http-helper';
+import { AuthService } from '../../general/login/auth-managment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,104 +12,183 @@ import { catchError, of, tap } from 'rxjs';
 export class AccountsManagmentService {
   private apiUrl = `${Url}/account`;
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  
   state = signal({
-    users: [] as Array<{ id: string; username: string; email: string; role: string }>,
-    banned: [] as Array<{ id: string; username: string; email: string; role: string }>,
+    accountList:{
+      data: [] as PartialAccountSchema[],
+      loading: false,
+      error: null as string | null
+    },
+    bannedList:{
+      data: [] as PartialAccountSchema[],
     loading: false,
     error: null as string | null
+    }
   });
 
-  private getStoredBanned(): string[] {
-    if (typeof localStorage === 'undefined') return [];
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private persistBanned(ids: string[]) {
-    if (typeof localStorage === 'undefined') return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-    } catch {
-      // ignore
-    }
-  }
-
-  load() {
-    this.state.update(() => ({ users: [], banned: [], loading: true, error: null }));
-    const storedBanned = this.getStoredBanned();
-
-    if (!Url) {
-      this.http.get<{ users: any[] }>('/mock/db.json')
-        .pipe(
-          tap((res) => {
-            const all = res.users
-              .filter(u => u.role !== 'admin')
-              .map(u => ({ id: u.id, username: u.username, email: u.email, role: u.role, banned: u.banned }));
-            const banned = all.filter(u => u.banned || storedBanned.includes(u.id));
-            const users = all.filter(u => !banned.find(b => b.id === u.id));
-            this.state.update((s) => ({ ...s, users, banned, loading: false }));
-          }),
-          catchError((err) => {
-            this.state.update((s) => ({ ...s, loading: false, error: err.error?.error || 'Error cargando usuarios' }));
-            return of(null);
-          })
-        ).subscribe();
-      return;
-    }
-
-    this.http.get<Array<{ id: string; username: string; email: string; role: string }>>(`${this.apiUrl}/list`)
-      .pipe(
-        tap((users) => {
-          const filtered = users.filter(u => u.role !== 'admin');
-          this.state.update((s) => ({ ...s, users: filtered, loading: false }));
-        }),
-        catchError((err) => {
-          this.state.update((s) => ({ ...s, loading: false, error: err.error?.error || 'Error cargando usuarios' }));
-          return of(null);
-        })
-      ).subscribe();
-  }
-
-  ban(id: string) {
-    this.state.update((s) => {
-      const user = s.users.find(u => u.id === id);
-      if (!user) return s;
-      const bannedIds = this.getStoredBanned();
-      const nextIds = Array.from(new Set([...bannedIds, id]));
-      this.persistBanned(nextIds);
-      return {
-        ...s,
-        users: s.users.filter(u => u.id !== id),
-        banned: [...s.banned, user]
-      };
-    });
-  }
-
-  unban(id: string) {
-    this.state.update((s) => {
-      const user = s.banned.find(u => u.id === id);
-      if (!user) return s;
-      const bannedIds = this.getStoredBanned().filter(b => b !== id);
-      this.persistBanned(bannedIds);
-      return {
-        ...s,
-        banned: s.banned.filter(u => u.id !== id),
-        users: [...s.users, user]
-      };
-    });
-  }
-
-  remove(id: string) {
-    const bannedIds = this.getStoredBanned().filter(b => b !== id);
-    this.persistBanned(bannedIds);
-    this.state.update((s) => ({
-      ...s,
-      banned: s.banned.filter(u => u.id !== id),
-      users: s.users.filter(u => u.id !== id)
+  
+  getAccounts(){
+    this.state.update((state) => ({
+      ...state,
+      accountList: {
+        data: [],
+        loading: true,
+        error: null
+      }
     }));
+    
+    withAuthRetry<PartialAccountSchema[]>(() =>
+      this.http.get<PartialAccountSchema[]>(`${this.apiUrl}/admin/list`,{withCredentials: true}),
+      this.authService
+    ).pipe(
+      tap({
+        next: (result) => {
+          this.state.update((state) => ({
+          ...state,
+          accountList: {
+            data: result,
+            loading: false,
+            error: null
+          }
+        }));
+        }
+      }),
+      catchError((err) => {
+        this.state.update((state) => ({
+          ...state,
+          accountList: {
+            ...state.accountList,
+            loading: false,
+            error: err.error?.message || 'Error al cargar las cuentas'
+          }
+        }));
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  getBanned(){
+    this.state.update((state) => ({
+      ...state,
+      bannedList: {
+        data: [],
+        loading: true,
+        error: null
+      }
+    }));
+    
+    withAuthRetry<PartialAccountSchema[]>(() =>
+      this.http.get<PartialAccountSchema[]>(`${this.apiUrl}/admin/banned`,{withCredentials: true}),
+      this.authService
+    ).pipe(
+      tap({
+        next: (result) => {
+          this.state.update((state) => ({
+          ...state,
+          bannedList: {
+            data: result,
+            loading: false,
+            error: null
+          }
+        }));
+        }
+      }),
+      catchError((err) => {
+        this.state.update((state) => ({
+          ...state,
+          bannedList: {
+            ...state.bannedList,
+            loading: false,
+            error: err.error?.message || 'Error al cargar las cuentas'
+          }
+        }));
+        return of(null);
+      })
+    ).subscribe();
+  };
+
+  banAccount(username: string) {
+    this.state.update((state) => ({
+      ...state,
+      accountList: {
+        ...state.accountList,
+        loading: true,
+        error: null
+      }
+    }));
+    withAuthRetry<void>(() =>
+      this.http.post<void>(`${this.apiUrl}/admin/ban/${username}`, {}, {withCredentials: true}),
+      this.authService
+    ).pipe(
+      tap({
+        next: () => {
+          this.state.update((state) => {
+          const result = state.accountList.data.filter((a) => a.username != username)
+          return {
+            ...state,
+            accountList: {
+              data: result,
+              loading: false,
+              error: null
+            }
+          }  
+        });
+        }
+      }),
+      catchError((err) => {
+        this.state.update((state) => ({
+          ...state,
+          accountList: {
+            ...state.accountList,
+            loading: false,
+            error: err.error?.message || 'Error al cargar las cuentas'
+          }
+        }));
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  unbanAccount(username: string) {
+    this.state.update((state) => ({
+      ...state,
+      bannedList: {
+        ...state.bannedList,
+        loading: true,
+        error: null
+      }
+    }));
+    withAuthRetry<void>(() =>
+      this.http.post<void>(`${this.apiUrl}/admin/unban/${username}`, {}, {withCredentials: true}),
+      this.authService
+    ).pipe(
+      tap({
+        next: () => {
+          this.state.update((state) => {
+          const result = state.bannedList.data.filter((a) => a.username != username)
+          return {
+            ...state,
+            bannedList: {
+              data: result,
+              loading: false,
+              error: null
+            }
+          }  
+        });
+        }
+      }),
+      catchError((err) => {
+        this.state.update((state) => ({
+          ...state,
+          bannedList: {
+            ...state.bannedList,
+            loading: false,
+            error: err.error?.message || 'Error al cargar las cuentas'
+          }
+        }));
+        return of(null);
+      })
+    ).subscribe();
   }
 }

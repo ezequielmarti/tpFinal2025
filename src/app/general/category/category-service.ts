@@ -8,8 +8,6 @@ import { PartialProductSchema } from "../../../schema/Product/product";
   providedIn: 'root',
 })
 export class CategoryService {
-
-    // lo puedo hacer mucho mas complejo si hay tiempo y ganas
     
     private apiUrl = `${Url}/product`;
     private http = inject(HttpClient);
@@ -23,58 +21,41 @@ export class CategoryService {
     });
 
     getTotalProducts(category: string): void {
+
+        let params = new HttpParams();
+
+        if(category !== undefined){
+            params = params.set('category', category);
+        }
+
         this.categoryState.update((state) => ({
             ...state,
             loading: true,
             error: null
         }));
 
-        if (!Url) {
-            this.http.get<{ products: (PartialProductSchema & { ownerId?: string })[] }>('/mock/db.json')
-            .pipe(
-                map((res) => res.products.filter(p => p.category === category)),
-                tap((list) => {
+        this.http.get<number>(`${this.apiUrl}/total`, { params })
+        .pipe(
+            tap({
+                next: (response) => {
                     this.categoryState.update((state) => ({
                         ...state,
-                        total: list.length,
+                        total: response,
                         loading: false,
                         error: null
+                        
                     }));
-                }),
-                catchError((err) => {
-                    this.categoryState.update((state) => ({
-                        ...state,
-                        loading: false,
-                        error: err.error?.error || 'Error al cargar los productos de la categoria'
-                    }));
-                    return of(null);
-                })
-            ).subscribe();
-            return;
-        }
-
-        this.http.get<{total: number}>(`${this.apiUrl}/total/${category}`)
-          .pipe(
-              tap({
-                  next: (response) => {
-                      this.categoryState.update((state) => ({
-                          ...state,
-                          total: response.total,
-                          loading: false,
-                          error: null
-                          
-                      }));
-                  }
-              }),
-              catchError((err) => {
-                  this.categoryState.update((state) => ({
-                      ...state,
-                      loading: false,
-                      error: err.error?.error || 'Error al cargar los productos de la categoria'                    
-                  }));
-                  return of(null);
-              })
-          ).subscribe();
+                }
+            }),
+            catchError((err) => {
+                this.categoryState.update((state) => ({
+                    ...state,
+                    loading: false,
+                    error: err.error?.error || 'Error al cargar los productos de la categoria'                    
+                }));
+                return of(null);
+            })
+        ).subscribe();
     }
 
     getProductsByCategory(category: string, limit?: number, offset?: number): void {
@@ -93,14 +74,13 @@ export class CategoryService {
             error: null
         }));
 
-        if (!Url) {
-            this.http.get<{ products: (PartialProductSchema & { ownerId?: string })[] }>('/mock/db.json')
-            .pipe(
-                map((res) => res.products.filter(p => p.category === category)),
-                tap((response) => {
+        this.http.get<PartialProductSchema[]>(`${this.apiUrl}/${category}`, { params })
+        .pipe(
+            tap({
+                next: (response) => {
                     this.categoryState.update((state) => {
                         const newItemsMap = new Map(state.data);
-                        const page = Math.floor((offset || 0) / (limit || response.length || 20)) + 1;
+                        const page = Math.floor((offset || 0) / (limit || 20)) + 1;
 
                         if(offset === 0) {
                             newItemsMap.clear();
@@ -116,51 +96,16 @@ export class CategoryService {
                             error: null
                         };
                     });
-                }),
-                catchError((err) => {
-                    this.categoryState.update((state) => ({
-                        ...state,
-                        loading: false,
-                        error: err.error?.error || 'Error al cargar productos'
-                    }));
-                    return of(null);
-                })
-            ).subscribe();
-            return;
-        }
-
-        this.http.get<{data: PartialProductSchema[]}>(`${this.apiUrl}/${category}`, { params })
-          .pipe(
-              tap({
-                  next: (response) => {
-                      this.categoryState.update((state) => {
-                          const newItemsMap = new Map(state.data);
-                          const page = Math.floor((offset || 0) / (limit || 20)) + 1;
-
-                          if(offset === 0) {
-                              newItemsMap.clear();
-                          }
-
-                          newItemsMap.set(page, response.data);
-
-                          return{
-                              ...state,
-                              data: newItemsMap,
-                              currentCategory: category,
-                              loading: false,
-                              error: null
-                          };
-                      });
-                  }
-              }),
-              catchError((err) => {
-                  this.categoryState.update((state) => ({
-                      ...state,
-                      loading: false,
-                      error: err.error?.error || 'Error al cargar productos'
-                  }));
-                  return of(null);
-              })
-          ).subscribe();
+                }
+            }),
+            catchError((err) => {
+                this.categoryState.update((state) => ({
+                    ...state,
+                    loading: false,
+                    error: err.error?.error || 'Error al cargar productos'
+                }));
+                return of(null);
+            })
+        ).subscribe();
     }
 }

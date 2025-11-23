@@ -1,8 +1,9 @@
 import { Component, effect, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AccountProductService } from './account-products-service';
-import { getRoleGroup, Role } from '../../../enum/role';
-import { AuthService } from '../../service/auth-managment';
+import { getRoleGroup, ERole } from '../../../enum/role';
+import { AuthService } from '../../general/login/auth-managment';
+
 
 @Component({
   selector: 'app-account-products',
@@ -32,7 +33,7 @@ export class AccountProducts {
 
   canSell(): boolean { // admin lo puedo sacar porque el admin no deberia entrar aca
     const auth = this.authSignal.authState();
-    return auth.role === Role.Seller;
+    return auth.role === ERole.Seller;
   }
 
   onGenerate() {

@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject, signal } from "@angular/core";
-import { catchError, map, of, tap } from "rxjs";
+import { catchError, of, tap } from "rxjs";
 import { Url } from "../../../common/const";
 import { PartialProductSchema } from "../../../schema/Product/product";
 
@@ -35,38 +35,7 @@ export class HomeService {
             }
         }));
 
-        if (!Url) {
-            this.http.get<{ products: (PartialProductSchema & { ownerId?: string })[] }>('/mock/db.json')
-            .pipe(
-                tap({
-                    next: (res) => {
-                        this.homeState.update((state) => ({
-                            ...state,
-                            productList: {
-                                ...state.productList,
-                                total: res.products.length,
-                                loading: false,
-                                error: null
-                            }
-                        }));
-                    }
-                }),
-                catchError((err) => {
-                    this.homeState.update((state) => ({
-                        ...state,
-                        productList: {
-                            ...state.productList,
-                            loading: false,
-                            error: err.error?.error || 'Error al cargar productos'
-                        }
-                    }));
-                    return of(null);
-                })
-            ).subscribe();
-            return;
-        }
-
-        this.http.get<{total: number}>(`${this.apiUrl}/total`)
+        this.http.get<number>(`${this.apiUrl}/total`)
         .pipe(
             tap({
                 next: (response) => {
@@ -74,7 +43,7 @@ export class HomeService {
                         ...state,
                         productList: {
                             ...state.productList,
-                            total: response.total,
+                            total: response,
                             loading: false,
                             error: null
                         }
@@ -87,7 +56,7 @@ export class HomeService {
                     productList: {
                         ...state.productList,
                         loading: false,
-                        error: err.error?.error || 'Error al cargar productos'
+                        error: err.error?.message || 'Error al cargar productos'
                     }
                 }));
                 return of(null);
@@ -114,50 +83,7 @@ export class HomeService {
             }
         }));
 
-        if (!Url) {
-            this.http.get<{ products: (PartialProductSchema & { ownerId?: string })[] }>('/mock/db.json')
-            .pipe(
-                map((res) => res.products),
-                tap({
-                    next: (items) => {
-                        this.homeState.update((state) => {
-                            const newItemsMap = new Map(state.productList.data);
-                            const page = Math.floor((offset || 0) / (limit || items.length || 20)) + 1;
-
-                            if(offset === 0) {
-                                newItemsMap.clear();
-                            }
-
-                            newItemsMap.set(page, items);
-
-                            return{
-                                ...state,
-                                productList: {
-                                    ...state.productList,
-                                    data: newItemsMap,
-                                    loading: false,
-                                    error: null
-                                }
-                            };
-                        });
-                    }
-                }),
-                catchError((err) => {
-                    this.homeState.update((state) => ({
-                        ...state,
-                        productList: {
-                            ...state.productList,
-                            loading: false,
-                            error: err.error?.error || 'Error al cargar productos'
-                        }
-                    }));
-                    return of(null);
-                })
-            ).subscribe();
-            return;
-        }
-
-        this.http.get<{data: PartialProductSchema[]}>(`${this.apiUrl}`, { params })
+        this.http.get<PartialProductSchema[]>(`${this.apiUrl}`, { params })
         .pipe(
             tap({
                 next: (response) => {
@@ -169,7 +95,7 @@ export class HomeService {
                             newItemsMap.clear();
                         }
 
-                        newItemsMap.set(page, response.data);
+                        newItemsMap.set(page, response);
 
                         return{
                             ...state,
@@ -189,7 +115,7 @@ export class HomeService {
                     productList: {
                         ...state.productList,
                         loading: false,
-                        error: err.error?.error || 'Error al cargar productos'
+                        error: err.error?.message || 'Error al cargar productos'
                     }
                 }));
                 return of(null);
@@ -216,39 +142,7 @@ export class HomeService {
             }
         }));
 
-        if (!Url) {
-            this.http.get<{ products: (PartialProductSchema & { ownerId?: string })[] }>('/mock/db.json')
-            .pipe(
-                map((res) => res.products.slice(0, limit || 4)),
-                tap({
-                    next: (items) => {
-                        this.homeState.update((state) => ({
-                            ...state,
-                            featuredList: {
-                                ...state.featuredList,
-                                data: items,
-                                loading: false,
-                                error: null
-                            }                       
-                        }));
-                    }
-                }),
-                catchError((err) => {
-                    this.homeState.update((state) => ({
-                        ...state,
-                        featuredList: {
-                            ...state.featuredList,
-                            loading: false,
-                            error: err.error?.error || 'Error al cargar productos destacados'
-                        }
-                    }));
-                    return of(null);
-                })
-            ).subscribe();
-            return;
-        }
-
-        this.http.get<{data: PartialProductSchema[]}>(`${this.apiUrl}`, { params })
+        this.http.get<PartialProductSchema[]>(`${this.apiUrl}`, { params })
         .pipe(
             tap({
                 next: (response) => {
@@ -256,7 +150,7 @@ export class HomeService {
                         ...state,
                         featuredList: {
                             ...state.featuredList,
-                            data: response.data,
+                            data: response,
                             loading: false,
                             error: null
                         }                       
@@ -269,7 +163,7 @@ export class HomeService {
                     featuredList: {
                         ...state.featuredList,
                         loading: false,
-                        error: err.error?.error || 'Error al cargar productos destacados'
+                        error: err.error?.message || 'Error al cargar productos destacados'
                     }
                 }));
                 return of(null);

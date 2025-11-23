@@ -1,50 +1,51 @@
-import { InferInput, object, optional, string, pipe, email, minLength, date, enum_, safeParse } from "valibot";
-import { Role } from "../../enum/role";
+import { ERole } from "../../enum/role";
 
+interface AccountSchema {
+    email: string;
+    username: string;
+    password: string;
+    role: ERole;  
+}
 
-const accountSchema = object({
-    "email": pipe(string(), email()),
-    "username": pipe(string(), minLength(4)),
-    "password": pipe(string(), minLength(6)),
-    "role": enum_(Role)
-});
+export interface CreateAdminSchema extends AccountSchema {
+    publicName: string;
+}
 
-const adminSchema = object({
-    ...accountSchema.entries,
-    "publicName": string()
-});
+export interface CreateUserSchema extends AccountSchema {
+    firstname: string;
+    lastname: string;
+    birth?: string;
+    phone?: string;
+}
 
-const businessSchema = object({
-    ...accountSchema.entries,
-    "title": string(),
-    "bio": optional(string()),
-    "phone": string(),
-    "contactEmail": optional(pipe(string(), email()))
-});
+export interface CreateBusinessSchema extends AccountSchema {
+    title: string;
+    bio?: string;
+    phone: string;
+    contactEmail?: string;
+}
 
-const userSchema = object({
-    "firstname": string(),
-    "lastname": string(),
-    "birth": optional(date()),
-    "phone": optional(string())
-});
+//-------------- Se definen separados para que rol no se pueda modificar por el usuario --------------------------
+interface UpdateAccountSchema {
+    email?: string;
+    username?: string;
+    password?: string;
+}
 
-export type CreateUser = InferInput<typeof userSchema>;
-export type UpdateUser = Partial<CreateUser>;
+export interface UpdateAdminSchema extends UpdateAccountSchema {
+    publicName?: string;
+}
 
-export type CreateBusiness = InferInput<typeof businessSchema>;
-export type UpdateBusiness = Partial<CreateBusiness>;
+export interface UpdateUserSchema extends UpdateAccountSchema {
+    firstname?: string;
+    lastname?: string;
+    birth?: string;
+    phone?: string;
+}
 
-export type CreateAdmin = InferInput<typeof adminSchema>;
-
-export const validateUser = (imput: unknown) => {
-    return safeParse(userSchema, imput)
-};
-
-export const validateBusiness = (imput: unknown) => {
-    return safeParse(businessSchema, imput)
-};
-
-export const validateAdmin = (imput: unknown) => {
-    return safeParse(adminSchema, imput)
-};
+export interface UpdateBusinessSchema extends UpdateAccountSchema {
+    title?: string;
+    bio?: string;
+    phone?: string;
+    contactEmail?: string;
+}

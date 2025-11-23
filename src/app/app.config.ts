@@ -2,9 +2,9 @@ import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalE
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { AuthService } from './service/auth-managment';
 import { firstValueFrom } from 'rxjs';
 import { Url } from '../common/const';
+import { AuthService } from './general/login/auth-managment';
 
 function initializeAuth() {
   const authService = inject(AuthService);

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ProductsManagmentService } from './products-managment-service';
-import { AuthService } from '../../service/auth-managment';
-import { Role } from '../../../enum/role';
+import { AuthService } from '../../general/login/auth-managment';
+
 
 @Component({
   selector: 'app-products-managment',
@@ -13,13 +13,7 @@ export class ProductsManagment implements OnInit {
   protected readonly svc = inject(ProductsManagmentService);
   protected readonly auth = inject(AuthService);
 
-  isAdmin(): boolean {
-    return this.auth.authState().role === Role.Admin;
-  }
-
   ngOnInit(): void {
-    if (this.isAdmin()) {
-      this.svc.load();
-    }
+
   }
 }
