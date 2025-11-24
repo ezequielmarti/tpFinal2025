@@ -4,7 +4,7 @@ import { catchError, of, tap } from 'rxjs';
 import { Url } from '../../../common/const';
 import { withAuthRetry } from '../../../helpers/http-helper';
 import { PartialProductSchema } from '../../../schema/Product/product';
-import { AuthService } from '../../service/auth-managment';
+import { AuthService } from '../../general/login/auth-managment';
 
 @Injectable({
   providedIn: 'root',
@@ -31,38 +31,10 @@ export class AccountProductService {
       error: null
     }));
 
-    if (!Url) {
-      this.http.get<{ users: Array<{ id: string; username: string }>; products: PartialProductSchema[] }>('/mock/db.json')
-      .pipe(
-        tap({
-          next: (res) => {
-            const currentUser = this.authService.authState().username;
-            const user = res.users.find(u => u.username === currentUser);
-            const list = user ? res.products.filter(p => (p as any).ownerId === user.id) : [];
-            this.accountProductsState.update((state) => ({
-              ...state,
-              data: list,
-              loading: false
-            }));
-          }
-        }),
-        catchError((err) => {
-          this.accountProductsState.update((state) => ({
-            ...state,
-            loading: false,
-            error: err.error?.message || 'Error al cargar los productos'
-          }));
-          return of(null);
-        })
-      ).subscribe();
-      return;
-    }
-
-    const endpoint = `${this.apiUrl}/user/list`;
-    const requestFn = () =>
-      this.http.get<PartialProductSchema[]>(endpoint, { withCredentials: true });
-
-    withAuthRetry<PartialProductSchema[]>(requestFn, this.authService).pipe(
+    withAuthRetry<PartialProductSchema[]>(() =>
+      this.http.get<PartialProductSchema[]>(`${this.apiUrl}`,{withCredentials: true}),
+      this.authService
+    ).pipe(
       tap({
         next: (result) => {
           this.accountProductsState.update((state) => ({
@@ -83,7 +55,7 @@ export class AccountProductService {
     ).subscribe();
   }
 
-  updateDiscount (id: string, discount: number) {
+  updateDiscount (productId: string, discount: number) {
     this.accountProductsState.update((state) => ({
       ...state,
       updateLoading: true,
@@ -91,14 +63,14 @@ export class AccountProductService {
     }));
 
     withAuthRetry<void>(() =>
-      this.http.patch<void>(`${this.apiUrl}/discount/${id}`, {discount}, {withCredentials: true}),
+      this.http.patch<void>(`${this.apiUrl}/discount/${productId}`, {discount}, {withCredentials: true}),
       this.authService
     ).pipe(
       tap({
         next: () => {
           this.accountProductsState.update((state) => {
             const newData = state.data!.map((d) => {
-              if (d.id === id) {
+              if (d.id === productId) {
                 return {...d, discountPercentage: discount};
               }
               return d;
@@ -123,24 +95,23 @@ export class AccountProductService {
     ).subscribe();
   }
 
-  updateStock (id: string, stock: number) {
+  updateStock (productId: string, delta: number) {
     this.accountProductsState.update((state) => ({
       ...state,
       updateLoading: true,
       updateError: null
     }));
 
-    withAuthRetry<void>(() =>
-      this.http.patch<void>(`${this.apiUrl}/stock/${id}`, {stock}, {withCredentials: true}),
+    withAuthRetry<number>(() =>
+      this.http.patch<number>(`${this.apiUrl}/stock/${productId}`, {delta}, {withCredentials: true}),
       this.authService
     ).pipe(
       tap({
-        next: () => {
+        next: (result) => {
           this.accountProductsState.update((state) => {
             const newData = state.data!.map((d) => {
-              if (d.id === id) {
-                const aux = d.stock + stock;
-                return {...d, stock: aux};
+              if (d.id === productId) {
+                return {...d, stock: result};
               }
               return d;
             });
@@ -164,7 +135,7 @@ export class AccountProductService {
     ).subscribe();
   }
 
-  updatePrice (id: string, price: number) {
+  updatePrice (productId: string, price: number) {
     this.accountProductsState.update((state) => ({
       ...state,
       updateLoading: true,
@@ -172,14 +143,14 @@ export class AccountProductService {
     }));
 
     withAuthRetry<void>(() =>
-      this.http.patch<void>(`${this.apiUrl}/price/${id}`, {price}, {withCredentials: true}),
+      this.http.patch<void>(`${this.apiUrl}/price/${productId}`, {price}, {withCredentials: true}),
       this.authService
     ).pipe(
       tap({
         next: () => {
           this.accountProductsState.update((state) => {
             const newData = state.data!.map((d) => {
-              if (d.id === id) {
+              if (d.id === productId) {
                 return {...d, price};
               }
               return d;

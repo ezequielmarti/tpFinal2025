@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../service/auth-managment';
-import { getRoleGroup, Role } from '../../../enum/role';
+import { getRoleGroup, ERole } from '../../../enum/role';
+import { AuthService } from '../login/auth-managment';
 
 @Component({
   selector: 'app-nav',
@@ -14,7 +14,7 @@ export class Nav {
   protected readonly authSignal = inject(AuthService);
   private router = inject(Router);
   getRoleGroup = getRoleGroup;
-  Role = Role;
+  Role = ERole;
   get currentUrl(): string {
     return this.router.url || '/home';
   }

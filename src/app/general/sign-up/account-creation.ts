@@ -1,8 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject, signal } from "@angular/core";
-import { catchError, Observable, of, switchMap, tap, throwError } from "rxjs";
+import { catchError, of, tap } from "rxjs";
 import { Url } from "../../../common/const";
-import { CreateBusiness, CreateAdmin, CreateUser } from "../../../schema/user/create-account";
+import { CreateAdminSchema, CreateBusinessSchema, CreateUserSchema } from "../../../schema/user/create-account";
+import { PartialAccountSchema } from "../../../schema/user/account";
+import { AuthService } from "../login/auth-managment";
+
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +13,8 @@ import { CreateBusiness, CreateAdmin, CreateUser } from "../../../schema/user/cr
 export class AccountCreation {
   private apiUrl = `${Url}/account`;
   private http = inject(HttpClient);
+
+  private authSignal = inject(AuthService);
 
   creationState = signal({
     loading: false,
@@ -23,28 +28,36 @@ export class AccountCreation {
     });
   }
 
-  createAccount(account: CreateBusiness | CreateAdmin | CreateUser): Observable<boolean> {
+  createAccount(account: CreateBusinessSchema | CreateAdminSchema | CreateUserSchema): void {
     this.creationState.update(() => ({
       loading: true,
       error: null
     }));
 
-    return this.http.post<void>(`${this.apiUrl}`, account, { withCredentials: true })
+    this.http.post<PartialAccountSchema>(`${this.apiUrl}`, {account}, { withCredentials: true })
     .pipe(
-      tap(() => {
+      tap((response) => {
         this.creationState.update(() => ({
           loading: false,
           error: null
-        }));
+        }))
+
+        this.authSignal.authState.update(() => ({
+          logged: true,
+          username: response.username,
+          role: response.role,
+          status: response.status,
+          loading: false,
+          error: null
+        }))
       }),
-      switchMap(() => of(true)),
       catchError((err) => {
         this.creationState.update(() => ({
           loading: false,
-          error: err.error?.error || "Errar al crear la cuenta"
+          error: err.error?.message || "Errar al crear la cuenta"
         }));
-        return of(false);
+        return of(null);
       })
-    );
+    ).subscribe();
   }
 }

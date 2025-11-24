@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { getRoleGroup } from '../../../enum/role';
-import { AuthService } from '../../service/auth-managment';
+import { AuthService } from '../login/auth-managment';
 
 @Component({
   selector: 'app-account-menu',

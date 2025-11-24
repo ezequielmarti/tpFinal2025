@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { AccountCreation } from './account-creation';
 import { Router } from '@angular/router';
-import { getRoleGroup, Role } from '../../../enum/role';
-import { AuthService } from '../../service/auth-managment';
-import { of, switchMap } from 'rxjs';
+import { ERole, getRoleGroup } from '../../../enum/role';
+import { AuthService } from '../login/auth-managment';
+
 
 @Component({
   selector: 'app-sign-up',
@@ -17,30 +17,19 @@ export class SignIn {
   private router = inject(Router);
   
   getRoleGroup = getRoleGroup;
-  Role = Role;
-  accountType = null as Role | null;
+  Role = ERole;
+  accountType = null as ERole | null;
 
-  onSelectAccount (role: Role) {
+  onSelectAccount (role: ERole) {
     this.accountType = role;
   }
 
   onSubmit(){
-    //aca pueden hacer un switch con getRole group y 
-    //validar que sea del tipo crear el tipo de cuenta 
-    // con los validate user/busines/admin que estan el 
-    // schema antes de mandarlo a crear acount
-    this.accountSignal.createAccount({} as any) 
-    .pipe(
-      switchMap((ok) => {
-        if (!ok) return of(false);  // si falló, no intentar refresh
-        return this.auth.refresh();
-      })
-    )
-    .subscribe((refreshed) => {
-      if (refreshed) {
-        this.router.navigate(['/']);
-      }
-    });
     
+    //el resultado lo mandas a la funcion de abajo, 
+    //no importa el que tipo de cuenta sea mientras cumpla con las condiciones.
+    
+    const newAccount = /*aca el resultado del forms*/ as CreateBusinessSchema | CreateAdminSchema | CreateUserSchema;
+    this.accountSignal.createAccount(newAccount);
   }
 }

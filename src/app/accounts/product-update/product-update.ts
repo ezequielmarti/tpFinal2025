@@ -1,8 +1,9 @@
 import { Component, effect, inject, OnInit } from '@angular/core';
 import { ProductUpdateService } from './product-update-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../service/auth-managment';
-import { UpdateProduct } from '../../../schema/Product/createProduct';
+import { UpdateProductSchema } from '../../../schema/Product/createProduct';
+import { AuthService } from '../../general/login/auth-managment';
+
 
 @Component({
   selector: 'app-product-update',
@@ -16,13 +17,28 @@ export class ProductUpdate implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  
   id = this.route.snapshot.paramMap.get('id');
+  
+  private _initialized = false;
   isLogged = effect(() => {
     if(!this.authSignal.authState().logged){
       alert('Tu sesion ha expirado o no tienes permisos. Seras redirigido al inicio.');
       this.router.navigate(['/']);
     }
-  })
+  });
+  productGuardEffect = effect(() => {
+    if (!this._initialized) {
+      if (this.productSignal.productState().data !== null) {
+        this._initialized = true; 
+      }
+      return;
+    }
+    if (this.productSignal.productState().data === null) {
+      alert('El producto ya no existe o fue eliminado. Serás redirigido.');
+      this.router.navigate(['/']);
+    }
+  });
 
   ngOnInit(): void {
     this.productSignal.getProduct(this.id!)
@@ -32,7 +48,7 @@ export class ProductUpdate implements OnInit {
     const current = this.productSignal.productState().data;
     if (!current) return;
 
-    const update: UpdateProduct & { id: string; discountPercentage?: number } = {
+    const update: UpdateProductSchema & { id: string; discountPercentage?: number } = {
       id: current.id,
       title: title || current.title,
       description: description || current.description,
