@@ -1,23 +1,22 @@
-import { ChangeDetectionStrategy, Component, computed, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { NgOptimizedImage } from '@angular/common';
 import { CategoryService } from './category-service';
-import { Subject, takeUntil } from 'rxjs';
 import { PartialProductSchema } from '../../../schema/Product/product';
 
 type SortType = 'default' | 'priceAsc' | 'priceDesc' | 'discountDesc' | 'discountAsc';
 
 @Component({
   selector: 'app-category',
-  imports: [RouterModule],
+  imports: [RouterModule, NgOptimizedImage],
   templateUrl: './category.html',
   styleUrl: './category.css',
-  changeDetection: ChangeDetectionStrategy.OnPush 
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Category implements OnInit, OnDestroy {
+export class Category {
   protected readonly categorySignal = inject(CategoryService);
-  private route = inject(ActivatedRoute);
-  private destroy$ = new Subject<void>();
+  private readonly route = inject(ActivatedRoute);
 
   filters = signal({
     tag: '',
@@ -76,19 +75,18 @@ export class Category implements OnInit, OnDestroy {
     return list;
   });
 
-  ngOnInit(): void {
-    this.route.paramMap
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => {
-        const id = params.get('id') || '';
+  private readonly params = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
+  protected readonly fallbackImage = 'https://picsum.photos/seed/fallback/400';
+
+  constructor() {
+    effect(
+      () => {
+        const id = this.params().get('id') || '';
         this.categorySignal.getTotalProducts(id);
         this.categorySignal.getProductsByCategory(id);
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   onFilterChange(key: 'tag' | 'minPrice' | 'maxPrice' | 'minDiscount' | 'sort', value: string) {
@@ -126,13 +124,5 @@ export class Category implements OnInit, OnDestroy {
   selectSort(value: SortType) {
     this.onFilterChange('sort', value);
     this.sortOpen.set(false);
-  }
-
-  @HostListener('document:click', ['$event'])
-  closeOnOutside(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.sort-dropdown')) {
-      this.sortOpen.set(false);
-    }
   }
 }

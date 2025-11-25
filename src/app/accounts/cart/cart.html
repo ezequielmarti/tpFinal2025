@@ -1,1 +1,59 @@
-<p>cart works!</p>
+@let cart = cartState();
+@let itemsList = items();
+
+<section class="cart">
+  @if (cart.loading) {
+    <p>Cargando carrito...</p>
+  } @else if (cart.error) {
+    <div class="alert error">{{ cart.error }}</div>
+  } @else if (!cart.data || !itemsList.length) {
+    <p class="muted">Tu carrito está vacío.</p>
+  } @else {
+    <header class="page-header">
+      <div>
+        <h2>Carrito</h2>
+        <p class="muted">{{ itemsList.length }} productos</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn ghost" (click)="clear()">Vaciar carrito</button>
+      </div>
+    </header>
+
+    <div class="cart-grid">
+      <div class="cart-items">
+        @for (item of itemsList; track item.productId) {
+          <article class="card cart-item">
+            <div>
+              <h3>{{ item.title }}</h3>
+              <p class="muted">Precio: ${{ item.price }}</p>
+            </div>
+            <div class="cart-controls">
+              <div class="quantity">
+                <button type="button" class="btn ghost" (click)="decrease(item.productId)">-</button>
+                <span aria-live="polite">{{ item.amount }}</span>
+                <button type="button" class="btn ghost" (click)="increase(item.productId)">+</button>
+              </div>
+              <div class="line-total">
+                <span class="muted">Subtotal</span>
+                <strong>${{ item.price * item.amount }}</strong>
+              </div>
+              <button type="button" class="btn danger" (click)="remove(item.productId)">Quitar</button>
+            </div>
+          </article>
+        }
+      </div>
+
+      <aside class="card summary">
+        <h3>Resumen</h3>
+        <div class="summary-row">
+          <span>Total</span>
+          <strong>${{ total() }}</strong>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn primary" (click)="checkout()">Finalizar compra</button>
+          <button type="button" class="btn ghost" (click)="clear()">Vaciar carrito</button>
+        </div>
+      </aside>
+    </div>
+  }
+</section>

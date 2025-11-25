@@ -1,52 +1,70 @@
-@let auth = authSignal.authState();
+@let auth = authState();
 
 <nav class="navbar">
   <div class="navbar__brand user-area">
     <a routerLink="/home">Shop</a>
-    @if(auth.logged){
-      <div class="user-menu">
-        <button type="button" class="user-chip">
-          <span class="avatar">{{ auth.username?.charAt(0) | uppercase }}</span>
+    @if (auth.logged) {
+      <div class="user-menu" (keydown.escape)="closeUserMenu()">
+        <button
+          type="button"
+          class="user-chip"
+          (click)="toggleUserMenu()"
+          [attr.aria-expanded]="userMenuOpen()"
+          aria-haspopup="menu"
+        >
+          <span class="avatar">{{ userInitial() }}</span>
           <span class="name">{{ auth.username }}</span>
         </button>
-        <div class="user-menu__menu">
-          <a routerLink="/accountDetails">Mi perfil</a>
-          <a routerLink="/account-transactions">Compras y ventas</a>
-          @if(auth.role === Role.Seller || auth.role === Role.Business){
-            <a routerLink="/accountProducts">Mis productos</a>
-          } @else if(auth.role === Role.Admin){
-            <a routerLink="/admin/accountsManagment">Admin: Cuentas</a>
-            <a routerLink="/admin/productsManagment">Admin: Productos</a>
-          }
-          <button type="button" (click)="logout()">Cerrar sesion</button>
-        </div>
+        @if (userMenuOpen()) {
+          <div class="user-menu__menu" role="menu">
+            <a routerLink="/accountDetails" role="menuitem">Mi perfil</a>
+            <a routerLink="/account-transactions" role="menuitem">Compras y ventas</a>
+            @if (auth.role === Role.Seller || auth.role === Role.Business) {
+              <a routerLink="/accountProducts" role="menuitem">Mis productos</a>
+            } @else if (auth.role === Role.Admin) {
+              <a routerLink="/admin/accountsManagment" role="menuitem">Admin: Cuentas</a>
+              <a routerLink="/admin/productsManagment" role="menuitem">Admin: Productos</a>
+            }
+            <button type="button" role="menuitem" (click)="logout()">Cerrar sesión</button>
+          </div>
+        }
       </div>
     }
   </div>
 
-  <form class="navbar__search" role="search" (submit)="onSearch(query.value, $event)">
-    <input #query type="search" placeholder="Buscar productos..." aria-label="Buscar productos" (keyup.enter)="onSearch(query.value, $event)" />
-    <button type="button" class="btn" (click)="onSearch(query.value, $event)">Buscar</button>
+  <form class="navbar__search" role="search" [formGroup]="searchForm" (ngSubmit)="onSearch()">
+    <input type="search" placeholder="Buscar productos..." aria-label="Buscar productos" formControlName="query" />
+    <button type="submit" class="btn">Buscar</button>
   </form>
 
   <div class="navbar__links">
     <a routerLink="/home">Inicio</a>
-    <div class="nav-category">
-      <button type="button" class="linklike">Categorias</button>
-      <div class="nav-category__menu">
-        <a routerLink="/category/electronic">Electronica</a>
-        <a routerLink="/category/sports">Deportes</a>
-        <a routerLink="/category/home-appliance">Hogar</a>
-        <a routerLink="/category/fashion">Moda</a>
-      </div>
+    <div class="nav-category" (keydown.escape)="closeCategoryMenu()">
+      <button
+        type="button"
+        class="linklike"
+        (click)="toggleCategoryMenu()"
+        [attr.aria-expanded]="categoryOpen()"
+        aria-haspopup="menu"
+      >
+        Categorías
+      </button>
+      @if (categoryOpen()) {
+        <div class="nav-category__menu" role="menu">
+          <a routerLink="/category/electronic" role="menuitem">Electrónica</a>
+          <a routerLink="/category/sports" role="menuitem">Deportes</a>
+          <a routerLink="/category/home-appliance" role="menuitem">Hogar</a>
+          <a routerLink="/category/fashion" role="menuitem">Moda</a>
+        </div>
+      }
     </div>
   </div>
 
   <div class="navbar__actions">
-    @if(!auth.logged){
+    @if (!auth.logged) {
       <a class="btn ghost" routerLink="/sign-up">Crear cuenta</a>
-      <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl }">Iniciar sesion</a>
-    }@else{
+      <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl() }">Iniciar sesión</a>
+    } @else {
       <a class="btn ghost" routerLink="/cart">Carrito</a>
     }
   </div>

@@ -1,59 +1,54 @@
-import { Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AccountProductService } from './account-products-service';
-import { getRoleGroup, ERole } from '../../../enum/role';
+import { ERole } from '../../../enum/role';
 import { AuthService } from '../../general/login/auth-managment';
-
 
 @Component({
   selector: 'app-account-products',
   imports: [RouterModule],
   templateUrl: './account-products.html',
   styleUrl: './account-products.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountProducts {
   protected readonly authSignal = inject(AuthService);
   protected readonly productSignal = inject(AccountProductService);
   protected readonly router = inject(Router);
 
-  getRoleGroup = getRoleGroup;
-  generate = false;
+  protected readonly generate = signal(false);
   private fetched = false;
 
-  constructor() { // esto redirecciona al home si se cierra sesion
-    effect(() => {
-      const auth = this.authSignal.authState();
+  protected readonly authState = computed(() => this.authSignal.authState());
+  protected readonly canSell = computed(() => this.authState().role === ERole.Seller);
+  protected readonly noAccess = computed(() => !this.authState().logged || !this.canSell());
 
-      if (auth.logged && this.canSell() && !this.fetched) {
-        this.productSignal.getProductList();
-        this.fetched = true;
-      }
-    });
+  constructor() {
+    effect(
+      () => {
+        const auth = this.authState();
+        if (auth.logged && this.canSell() && !this.fetched) {
+          this.productSignal.getProductList();
+          this.fetched = true;
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
-  canSell(): boolean { // admin lo puedo sacar porque el admin no deberia entrar aca
-    const auth = this.authSignal.authState();
-    return auth.role === ERole.Seller;
+  onGenerate(): void {
+    this.generate.set(true);
   }
 
-  onGenerate() {
-    this.generate = true;
+  onCancel(): void {
+    this.generate.set(false);
   }
 
-  onCancel() { // si cancelan la creacion del producto
-    this.generate = false;
+  onSubmit(): void {
+    this.generate.set(false);
   }
 
-  onSubmit() { // si el producto se crea exitosamente esta linea cambia el template del html
-    this.generate = false;
-  }
-
-  onEdit(id: string) {
+  onEdit(id: string): void {
     this.router.navigate(['/productUpdate', id]);
-  }
-
-  noAccess(): boolean {
-    const auth = this.authSignal.authState();
-    return !auth.logged || !this.canSell();
   }
 }

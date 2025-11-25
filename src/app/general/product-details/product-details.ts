@@ -1,80 +1,120 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductDetailsService } from './product-details-service';
-import { ERole, getRoleGroup } from '../../../enum/role';
 import { AuthService } from '../login/auth-managment';
 import { CreateReviewSchema } from '../../../schema/Product/createReview';
 
-
 @Component({
   selector: 'app-product-details',
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule, ReactiveFormsModule, NgOptimizedImage],
   templateUrl: './product-details.html',
   styleUrl: './product-details.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetails implements OnInit {
+export class ProductDetails {
   protected readonly productSignal = inject(ProductDetailsService);
   protected readonly authSignal = inject(AuthService);
-  private route = inject(ActivatedRoute);
-  getRoleGroup = getRoleGroup;
-  stars = [1, 2, 3, 4, 5];
-  selectedRating = 5;
-  Role = ERole;
+  private readonly route = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.productSignal.getProduct(id);
-    }
-  }
+  protected readonly stars = [1, 2, 3, 4, 5];
+  protected readonly fallbackImage = 'https://picsum.photos/seed/fallback/600';
+  protected readonly selectedRating = signal(5);
 
-  isOwner(): boolean {
-    const auth = this.authSignal.authState();
-    const prod = this.productSignal.productState().data;
-    if (!auth.logged || !prod) return false;
-    const ownerId = (prod as any).ownerId;
+  private readonly params = toSignal(this.route.paramMap, {
+    initialValue: this.route.snapshot.paramMap,
+  });
+
+  protected readonly productState = computed(() => this.productSignal.productState());
+  protected readonly productData = computed(() => this.productState().data);
+  protected readonly authState = computed(() => this.authSignal.authState());
+
+  protected readonly finalPrice = computed(() => {
+    const data = this.productData();
+    if (!data) return null;
+    const discount = data.discountPercentage || 0;
+    return data.price - (data.price * discount) / 100;
+  });
+
+  protected readonly shippingMessage = computed(() => {
+    const price = this.finalPrice();
+    const data = this.productData();
+    if (!data || price === null) return '';
+    if (price >= 150000) return 'Envío gratis en tu compra';
+    if (data.weight > 3) return 'Envío estimado $3500';
+    return 'Envío estimado $1800';
+  });
+
+  protected readonly isOwner = computed(() => {
+    const auth = this.authState();
+    const prod = this.productData();
+    if (!auth.logged || !prod || !auth.username) return false;
     const ownerName = (prod as any).accountName;
-    if (ownerName && auth.username) {
+    if (ownerName) {
       return ownerName.toLowerCase() === auth.username.toLowerCase();
     }
-    if (ownerId && auth.username) {
-      // en mock ownerId es distinto al username, no se puede comparar con el auth actual
-      return false;
-    }
     return false;
+  });
+
+  protected readonly hasReview = computed(() => {
+    const prod = this.productData();
+    const user = this.authState().username?.toLowerCase();
+    if (!prod || !user) return false;
+    return prod.reviews?.some((r) => r.username?.toLowerCase() === user) ?? false;
+  });
+
+  protected readonly canReview = computed(() => {
+    const auth = this.authState();
+    const prod = this.productData();
+    if (!auth.logged || !prod) return false;
+    return !this.hasReview();
+  });
+
+  protected readonly reviewForm = this.fb.nonNullable.group({
+    comment: ['', Validators.maxLength(500)],
+  });
+
+  constructor() {
+    effect(() => {
+      const id = this.params().get('id');
+      if (id) {
+        this.productSignal.getProduct(id);
+      }
+    });
   }
 
-  myReviewUsername(): string | null {
-    const auth = this.authSignal.authState();
-    return auth.username || null;
+  setRating(value: number): void {
+    this.selectedRating.set(value);
   }
 
-  hasReview(): boolean {
-    const prod = this.productSignal.productState().data;
-    const user = this.myReviewUsername();
-    return !!(user && prod?.reviews?.some(r => r.username?.toLowerCase() === user.toLowerCase()));
-  }
+  submitReview(): void {
+    const prod = this.productData();
+    const username = this.authState().username;
+    if (!prod || !username || !this.canReview()) {
+      return;
+    }
 
-  submitReview(rating: number, comment: string) {
-    const prod = this.productSignal.productState().data;
-    const user = this.myReviewUsername();
-    if (!prod || !user) return;
     const payload: CreateReviewSchema = {
       productId: prod.id,
-      rating: rating || this.selectedRating || 5,
-      comment: comment?.trim() || 'Sin comentario'
+      rating: this.selectedRating(),
+      comment: this.cleanComment(this.reviewForm.controls.comment.value),
     };
+
     this.productSignal.createReview(payload);
+    this.reviewForm.reset({ comment: '' });
   }
 
-  deleteReview() {
-    const prod = this.productSignal.productState().data;
+  deleteReview(): void {
+    const prod = this.productData();
     if (!prod) return;
     this.productSignal.deleteReview(prod.id);
   }
 
-  setRating(value: number) {
-    this.selectedRating = value;
+  private cleanComment(value: string): string {
+    const trimmed = value.trim();
+    return trimmed || 'Sin comentario';
   }
 }

@@ -1,25 +1,36 @@
-@let product = productSignal.productState();
-@let auth = authSignal.authState();
+@let product = productState();
+@let auth = authState();
 
 @if (product.loading) {
   <p>Cargando producto...</p>
 } @else if (product.error) {
-  <div class="alert error">{{ product.error }}</div>
+  <div class="alert error" role="alert">{{ product.error }}</div>
 } @else {
-  @if(!product.data){
+  @if (!product.data) {
     <p class="muted">Sin datos del producto.</p>
   } @else {
-    @let finalPrice = product.data.price - (product.data.price * product.data.discountPercentage / 100);
     <section class="product-details">
       <section class="card product-hero">
         <div class="product-hero__media">
           <div class="gallery-main">
-            <img [src]="product.data.thumbnail || product.data.images?.[0] || 'https://picsum.photos/seed/fallback/600'" [alt]="product.data.title">
+            <img
+              [ngSrc]="product.data.thumbnail || product.data.images?.[0] || fallbackImage"
+              [alt]="product.data.title"
+              width="720"
+              height="480"
+              priority
+            />
           </div>
-          @if(product.data.images?.length){
+          @if (product.data.images?.length) {
             <div class="gallery-thumbs">
               @for (img of product.data.images; track $index) {
-                <img [src]="img" [alt]="product.data.title" />
+                <img
+                  [ngSrc]="img"
+                  [alt]="product.data.title"
+                  width="160"
+                  height="120"
+                  loading="lazy"
+                />
               }
             </div>
           }
@@ -30,13 +41,13 @@
           <h1>{{ product.data.title }}</h1>
 
           <div class="price-block">
-            @if(product.data.discountPercentage > 0){
+            @if (product.data.discountPercentage > 0 && finalPrice() !== null) {
               <div class="muted original-price">${{ product.data.price }}</div>
               <div class="price-final">
-                <strong>${{ finalPrice }}</strong>
+                <strong>${{ finalPrice() }}</strong>
                 <span class="badge success">{{ product.data.discountPercentage }}% OFF</span>
               </div>
-            }@else{
+            } @else {
               <div class="price-final">
                 <strong>${{ product.data.price }}</strong>
               </div>
@@ -44,48 +55,42 @@
             <div class="muted">Stock: {{ product.data.stock }}</div>
           </div>
 
-          <div class="shipping">
-            {{
-              finalPrice >= 150000
-                ? 'Envio gratis en tu compra'
-                : (product.data.weight > 3 ? 'Envio estimado $3500' : 'Envio estimado $1800')
-            }}
-          </div>
+          <div class="shipping">{{ shippingMessage() }}</div>
 
-          @if(auth.logged && !isOwner()){
+          @if (auth.logged && !isOwner()) {
             <div class="actions">
               <button type="button" class="btn primary">Comprar ahora</button>
               <button type="button" class="btn ghost">Agregar al carrito</button>
             </div>
-          }@else if(auth.logged && isOwner()){
+          } @else if (auth.logged && isOwner()) {
             <div class="actions">
-              <span class="badge muted">Es tu publicacion</span>
+              <span class="badge muted">Es tu publicación</span>
               <a class="btn ghost" [routerLink]="['/productUpdate', product.data.id]">Editar producto</a>
             </div>
-          }@else{
-            <p class="muted">Inicia sesion para comprar o agregar al carrito.</p>
+          } @else {
+            <p class="muted">Inicia sesión para comprar o agregar al carrito.</p>
           }
         </div>
       </section>
 
       <section class="card">
-        <h3>Descripcion</h3>
+        <h3>Descripción</h3>
         <p>{{ product.data.description }}</p>
       </section>
 
       <section class="card">
-        <h3>Envio y garantia</h3>
+        <h3>Envío y garantía</h3>
         <div class="grid">
           <div>
             <p class="muted">Peso</p>
             <strong>{{ product.data.weight }} kg</strong>
           </div>
           <div>
-            <p class="muted">Garantia</p>
+            <p class="muted">Garantía</p>
             <strong>{{ product.data.warrantyInformation || 'No especificada' }}</strong>
           </div>
           <div>
-            <p class="muted">Envio</p>
+            <p class="muted">Envío</p>
             <strong>{{ product.data.shippingInformation || 'Consultar' }}</strong>
           </div>
         </div>
@@ -93,9 +98,9 @@
 
       <section class="card">
         <h3>Tienda</h3>
-        @if(product.data.store?.length){
+        @if (product.data.store?.length) {
           <ul class="list">
-            @for (store of product.data.store; track store.id) {
+            @for (store of product.data.store; track $index) {
               <li>
                 <strong>{{ store.address }}</strong>
                 <div class="muted">{{ store.city }} - {{ store.country }}</div>
@@ -103,34 +108,37 @@
               </li>
             }
           </ul>
-        }@else{
+        } @else {
           <p class="muted">Sin datos de tienda.</p>
         }
       </section>
 
       <section class="card">
-        <h3>Resenas</h3>
-        @if(auth.logged && !hasReview()){
-          <form class="grid" novalidate>
+        <h3>Reseñas</h3>
+        @if (auth.logged && canReview()) {
+          <form class="grid" [formGroup]="reviewForm" (ngSubmit)="submitReview()" novalidate>
             <div class="stars">
               @for (star of stars; track star) {
-                <button type="button" class="star" [class.filled]="star <= selectedRating" (click)="setRating(star)">★</button>
+                <button type="button" class="star" [class.filled]="star <= selectedRating()" (click)="setRating(star)">&#9733;</button>
               }
-              <span class="muted">{{ selectedRating }} / 5</span>
+              <span class="muted">{{ selectedRating() }} / 5</span>
             </div>
-            <label>Comentario<textarea #comment rows="3" placeholder="Escribe tu experiencia"></textarea></label>
+            <label>
+              <span>Comentario</span>
+              <textarea rows="3" formControlName="comment" placeholder="Escribe tu experiencia"></textarea>
+            </label>
             <div class="form-actions">
-              <button type="button" class="btn primary" (click)="submitReview(selectedRating, comment.value)">Enviar resena</button>
+              <button type="submit" class="btn primary">Enviar reseña</button>
             </div>
           </form>
-        }@else if(auth.logged && hasReview()){
-          <p class="muted">Ya dejaste una resena.</p>
-          <button type="button" class="btn ghost" (click)="deleteReview()">Eliminar mi resena</button>
-        }@else{
-          <p class="muted">Inicia sesion para dejar una resena.</p>
+        } @else if (auth.logged && hasReview()) {
+          <p class="muted">Ya dejaste una reseña.</p>
+          <button type="button" class="btn ghost" (click)="deleteReview()">Eliminar mi reseña</button>
+        } @else {
+          <p class="muted">Inicia sesión para dejar una reseña.</p>
         }
 
-        @if(product.data.reviews?.length){
+        @if (product.data.reviews?.length) {
           <ul class="list">
             @for (review of product.data.reviews; track review.username) {
               <li>
@@ -138,14 +146,14 @@
                 <p>{{ review.comment || 'Sin comentario' }}</p>
                 <div class="review-rating">
                   @for (star of stars; track star) {
-                    <span class="star" [class.filled]="review.rating >= star">★</span>
+                    <span class="star" [class.filled]="review.rating >= star">&#9733;</span>
                   }
                 </div>
               </li>
             }
           </ul>
-        }@else{
-          <p class="muted">Sin resenas aun.</p>
+        } @else {
+          <p class="muted">Sin reseñas aún.</p>
         }
       </section>
     </section>

@@ -1,5 +1,5 @@
-@let account = accountSignal.accountState();
-@let auth = authSignal.authState();
+@let account = accountState();
+@let auth = authState();
 
 <section class="account-details">
   @if(!auth.role){
@@ -17,10 +17,10 @@
         <p class="muted">Datos de perfil, direcciones y locales</p>
       </div>
       <div class="actions">
-        @if(!edit){
-          <button type="button" class="btn" (click)="edit = true">Editar</button>
+        @if(!edit()){
+          <button type="button" class="btn" (click)="onEditToggle(true)">Editar</button>
         }@else{
-          <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+          <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
         }
       </div>
     </header>
@@ -42,7 +42,7 @@
 
     @switch(getRoleGroup(auth.role!)){
       @case ('user') {
-        @if(!edit){
+        @if(!edit()){
           <div class="details-grid">
             <section class="card stretch">
               <h3>Datos personales</h3>
@@ -84,7 +84,7 @@
             </div>
             <div class="form-actions">
               <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+              <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
             </div>
             @if(auth.role === Role.User){
               <div class="seller-upgrade card muted">
@@ -105,7 +105,7 @@
         }
       }
       @case ('business') {
-        @if(!edit){
+        @if(!edit()){
           <div class="details-grid">
             <section class="card stretch">
               <h3>Perfil de negocio</h3>
@@ -147,13 +147,13 @@
             </div>
             <div class="form-actions">
               <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+              <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
             </div>
           </section>
         }
       }
       @case ('admin') {
-        @if(!edit){
+        @if(!edit()){
           <section class="card stretch">
             <h3>Perfil administrador</h3>
             <dl class="meta two-cols">
@@ -171,7 +171,7 @@
             </div>
             <div class="form-actions">
               <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="edit = false">Cancelar</button>
+              <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
             </div>
           </section>
         }

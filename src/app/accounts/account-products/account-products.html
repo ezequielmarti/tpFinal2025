@@ -15,7 +15,7 @@
       </div>
       <div class="actions">
         <button type="button" class="btn ghost" (click)="productSignal.getProductList()">Actualizar lista</button>
-        <button type="button" class="btn primary" (click)="onGenerate()" [disabled]="generate">Agregar producto</button>
+        <button type="button" class="btn primary" (click)="onGenerate()" [disabled]="generate()">Agregar producto</button>
       </div>
     </header>
 
@@ -26,7 +26,7 @@
         <p>{{ products.error }}</p>
         <button type="button" class="btn" (click)="productSignal.getProductList()">Reintentar</button>
       </div>
-    } @else if (generate) {
+    } @else if (generate()) {
       <section class="card">
         <h3>Nuevo producto</h3>
         <form class="grid" (ngSubmit)="onSubmit()">

@@ -12,14 +12,14 @@ import { AccountMenu } from './general/account-menu/account-menu';
 import { Category } from './general/category/category';
 import { ProductDetails } from './general/product-details/product-details';
 import { Search } from './general/search/search';
-import { SignIn } from './general/sign-up/sign-up';
+import { SignUp } from './general/sign-up/sign-up';
 import { Login } from './general/login/login';
 import { Home } from './general/home/home';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: Home },
-  { path: 'sign-up', component: SignIn },
+  { path: 'sign-up', component: SignUp },
   { path: 'login', component: Login },
   { path: 'account', component: AccountMenu },
   { path: 'accountDetails', component: AccountDetails },

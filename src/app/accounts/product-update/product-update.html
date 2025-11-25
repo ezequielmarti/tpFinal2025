@@ -1,13 +1,13 @@
-@let product = productSignal.productState();
+@let product = productState();
 
 <section class="product-update">
-  @if(product.loading){
+  @if (product.loading) {
     <p>Cargando producto...</p>
-  }@else if(product.error){
+  } @else if (product.error) {
     <div class="alert error">Error: {{ product.error }}</div>
-  }@else if(!product.data){
+  } @else if (!product.data) {
     <p class="muted">No hay producto seleccionado.</p>
-  }@else{
+  } @else {
     <header class="page-header">
       <div>
         <h2>Editar producto</h2>
@@ -15,23 +15,45 @@
       </div>
     </header>
 
-    <section class="card">
+    <form class="card" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <h3>Datos principales</h3>
       <div class="grid">
-        <label>Titulo<input #title [value]="product.data.title" /></label>
-        <label>Precio<input #price type="number" [value]="product.data.price" /></label>
-        <label>Stock<input #stock type="number" [value]="product.data.stock" /></label>
-        <label>Descuento %<input #discount type="number" [value]="product.data.discountPercentage" /></label>
+        <label>
+          <span>Título</span>
+          <input type="text" formControlName="title" />
+        </label>
+        <label>
+          <span>Precio</span>
+          <input type="number" formControlName="price" min="0" step="0.01" />
+        </label>
+        <label>
+          <span>Stock</span>
+          <input type="number" formControlName="stock" min="0" />
+        </label>
+        <label>
+          <span>Descuento %</span>
+          <input type="number" formControlName="discount" min="0" max="100" />
+        </label>
       </div>
-      <label>Descripcion<textarea #desc rows="3">{{ product.data.description }}</textarea></label>
+
+      <label>
+        <span>Descripción</span>
+        <textarea rows="3" formControlName="description"></textarea>
+      </label>
       <div class="inline">
-        <label>Categoria<input #category [value]="product.data.category" /></label>
-        <label>Marca<input #brand [value]="product.data.brand" /></label>
+        <label>
+          <span>Categoría</span>
+          <input type="text" formControlName="category" />
+        </label>
+        <label>
+          <span>Marca</span>
+          <input type="text" formControlName="brand" />
+        </label>
       </div>
       <div class="form-actions">
-        <button class="btn primary" type="button" (click)="onSubmit(title.value, desc.value, category.value, brand.value, price.valueAsNumber, stock.valueAsNumber, discount.valueAsNumber)">Guardar</button>
+        <button class="btn primary" type="submit">Guardar</button>
         <button class="btn ghost" type="button" (click)="onCancel()">Cancelar</button>
       </div>
-    </section>
+    </form>
   }
 </section>

@@ -1,36 +1,37 @@
-@let state = svc.state();
+@let accounts = accountList();
+@let banned = bannedList();
 
-@if(!isAdmin()){
-  <div class="alert error">No tienes permisos para ver esta seccion.</div>
-}@else{
+@if (!isAdmin()) {
+  <div class="alert error">No tienes permisos para ver esta sección.</div>
+} @else {
   <section class="admin-accounts">
     <header class="page-header">
       <div>
-        <h2>Gestion de cuentas</h2>
+        <h2>Gestión de cuentas</h2>
         <p class="muted">Listado de usuarios (sin admins) y acciones de ban.</p>
       </div>
-      <button type="button" class="btn ghost" (click)="svc.load()" [disabled]="state.loading">Recargar</button>
+      <button type="button" class="btn ghost" (click)="reload()" [disabled]="accounts.loading || banned.loading">Recargar</button>
     </header>
 
-    @if(state.loading){
+    @if (accounts.loading || banned.loading) {
       <p>Cargando...</p>
-    }@else if(state.error){
-      <div class="alert error">{{ state.error }}</div>
-    }@else{
+    } @else if (accounts.error || banned.error) {
+      <div class="alert error">{{ accounts.error || banned.error }}</div>
+    } @else {
       <section class="card">
         <h3>Usuarios activos</h3>
-        @if(!state.users.length){
+        @if (!accounts.data.length) {
           <p class="muted">Sin usuarios activos.</p>
-        }@else{
+        } @else {
           <ul class="list">
-            @for (user of state.users; track user.id) {
+            @for (user of accounts.data; track user.username) {
               <li>
                 <div>
                   <strong>{{ user.username }}</strong>
-                  <div class="muted">{{ user.email }} · Rol: {{ user.role }}</div>
+                  <div class="muted">Rol: {{ user.role }}</div>
                 </div>
                 <div class="actions">
-                  <button type="button" class="btn danger" (click)="svc.ban(user.id)">Banear</button>
+                  <button type="button" class="btn danger" (click)="ban(user.username)">Banear</button>
                 </div>
               </li>
             }
@@ -40,19 +41,18 @@
 
       <section class="card">
         <h3>Usuarios baneados</h3>
-        @if(!state.banned.length){
+        @if (!banned.data.length) {
           <p class="muted">No hay usuarios baneados.</p>
-        }@else{
+        } @else {
           <ul class="list">
-            @for (user of state.banned; track user.id) {
+            @for (user of banned.data; track user.username) {
               <li>
                 <div>
                   <strong>{{ user.username }}</strong>
-                  <div class="muted">{{ user.email }} · Rol: {{ user.role }}</div>
+                  <div class="muted">Rol: {{ user.role }}</div>
                 </div>
                 <div class="actions">
-                  <button type="button" class="btn" (click)="svc.unban(user.id)">Desbanear</button>
-                  <button type="button" class="btn ghost" (click)="svc.remove(user.id)">Eliminar</button>
+                  <button type="button" class="btn" (click)="unban(user.username)">Desbanear</button>
                 </div>
               </li>
             }

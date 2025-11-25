@@ -1,34 +1,37 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { filter, map, distinctUntilChanged, Subscription } from 'rxjs';
-import { RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SearchService } from './search-service';
 
 @Component({
   selector: 'app-search',
-  imports: [RouterModule],
+  imports: [RouterModule, NgOptimizedImage],
   templateUrl: './search.html',
   styleUrl: './search.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Search implements OnInit, OnDestroy {
+export class Search {
   protected readonly searchSignal = inject(SearchService);
-  private route = inject(ActivatedRoute);
-  private sub?: Subscription;
+  private readonly route = inject(ActivatedRoute);
 
-  ngOnInit(): void {
-    this.sub = this.route.queryParamMap
-      .pipe(
-        map(params => params.get('q')?.trim() || ''),
-        distinctUntilChanged(),
-        filter(q => !!q)
-      )
-      .subscribe((q) => {
-        this.searchSignal.search(q);
-      });
-  }
+  protected readonly fallbackImage = 'https://picsum.photos/seed/fallback/400';
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+  private readonly queryParams = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap
+  });
+  private readonly lastQuery = signal<string>('');
+
+  readonly searchQuery = computed(() => (this.queryParams().get('q') ?? '').trim());
+
+  constructor() {
+    effect(() => {
+      const q = this.searchQuery();
+      if (!q || q === this.lastQuery()) {
+        return;
+      }
+      this.lastQuery.set(q);
+      this.searchSignal.search(q);
+    });
   }
 }

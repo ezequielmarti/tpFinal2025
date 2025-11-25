@@ -1,12 +1,14 @@
 @let search = searchSignal.searchState();
 
-@if (search.loading) {
-  <p>Cargando resultados...</p>
-}@else if (search.error) {
-  <div class="alert error">{{ search.error }}</div>
-}@else if (search.data.length === 0){
-  <p class="muted">No hay resultados para tu busqueda.</p>
-}@else {
+@if (!searchQuery()) {
+  <p class="muted">Escribí algo para buscar productos.</p>
+} @else if (search.loading) {
+  <p role="status">Cargando resultados...</p>
+} @else if (search.error) {
+  <div class="alert error" role="alert">{{ search.error }}</div>
+} @else if (search.data.length === 0) {
+  <p class="muted">No hay resultados para tu búsqueda.</p>
+} @else {
   <section class="page-header">
     <div>
       <h2>Resultados</h2>
@@ -17,18 +19,24 @@
   <div class="product-grid">
     @for (item of search.data; track item.id) {
       <a class="card product" [routerLink]="['/product', item.id]">
-        <img [src]="item.thumbnail || item.images?.[0] || 'https://picsum.photos/seed/fallback/400'" alt="{{ item.title }}">
+        <img
+          [ngSrc]="item.thumbnail || item.images?.[0] || fallbackImage"
+          width="320"
+          height="240"
+          alt="{{ item.title }}"
+          loading="lazy"
+        />
         <h3>{{ item.title }}</h3>
         <p class="muted">{{ item.description }}</p>
-        @let final = item.price - (item.price * item.discountPercentage / 100);
+        @let final = item.price - (item.price * item.discountPercentage / 100); 
         <div class="meta product-meta">
-          @if(item.discountPercentage > 0){
+          @if (item.discountPercentage > 0) {
             <div>
               <div class="price-original">${{ item.price }}</div>
               <div class="price-final">${{ final }}</div>
             </div>
             <span class="badge success">{{ item.discountPercentage }}% OFF</span>
-          }@else{
+          } @else {
             <strong class="price-final">${{ item.price }}</strong>
           }
         </div>
