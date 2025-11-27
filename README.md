@@ -1,4 +1,4 @@
-# UTN – E‑Commerce Mock (Angular + JSON Server)
+# UTN – E‑Commerce (Angular + JSON Server)
 
 Catálogo, cuentas y administración simulados con Angular consumiendo un backend mock en JSON Server.
 
