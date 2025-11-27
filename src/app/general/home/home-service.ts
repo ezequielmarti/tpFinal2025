@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject, signal } from "@angular/core";
 import { catchError, of, tap } from "rxjs";
-import { Url } from "../../../common/const";
+import { Url, isMockApi } from "../../../common/const";
 import { PartialProductSchema } from "../../../schema/Product/product";
 
 @Injectable({
@@ -35,15 +35,18 @@ export class HomeService {
             }
         }));
 
-        this.http.get<number>(`${this.apiUrl}/total`)
+        const totalUrl = isMockApi ? `${this.apiUrl}` : `${this.apiUrl}/total`;
+
+        this.http.get<PartialProductSchema[] | number>(totalUrl)
         .pipe(
             tap({
                 next: (response) => {
+                    const total = Array.isArray(response) ? response.length : response;
                     this.homeState.update((state) => ({
                         ...state,
                         productList: {
                             ...state.productList,
-                            total: response,
+                            total,
                             loading: false,
                             error: null
                         }
@@ -87,6 +90,7 @@ export class HomeService {
         .pipe(
             tap({
                 next: (response) => {
+                    const filtered = response.filter((p) => (p as any).status !== 'blocked');
                     this.homeState.update((state) => {
                         const newItemsMap = new Map(state.productList.data);
                         const page = Math.floor((offset || 0) / (limit || 20)) + 1;
@@ -95,7 +99,7 @@ export class HomeService {
                             newItemsMap.clear();
                         }
 
-                        newItemsMap.set(page, response);
+                        newItemsMap.set(page, filtered);
 
                         return{
                             ...state,
@@ -123,7 +127,7 @@ export class HomeService {
         ).subscribe();
     }
 
-    getFeatured(limit?: number, offset?: number): void {
+  getFeatured(limit?: number, offset?: number): void {
         let params = new HttpParams();
 
         if (limit !== undefined) {
@@ -142,15 +146,16 @@ export class HomeService {
             }
         }));
 
-        this.http.get<PartialProductSchema[]>(`${this.apiUrl}`, { params })
-        .pipe(
-            tap({
-                next: (response) => {
+    this.http.get<PartialProductSchema[]>(`${this.apiUrl}`, { params })
+      .pipe(
+        tap({
+            next: (response) => {
+                    const filtered = response.filter((p) => (p as any).status !== 'blocked');
                     this.homeState.update((state) => ({
                         ...state,
                         featuredList: {
                             ...state.featuredList,
-                            data: response,
+                            data: this.pickRandom(filtered, 4),
                             loading: false,
                             error: null
                         }                       
@@ -169,5 +174,11 @@ export class HomeService {
                 return of(null);
             })
         ).subscribe();
+    }
+
+    private pickRandom(list: PartialProductSchema[], count: number): PartialProductSchema[] {
+        if (!list || !list.length) return [];
+        const shuffled = [...list].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, Math.min(count, shuffled.length));
     }
 }

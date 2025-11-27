@@ -29,23 +29,47 @@
     } @else if (generate()) {
       <section class="card">
         <h3>Nuevo producto</h3>
-        <form class="grid" (ngSubmit)="onSubmit()">
-          <label>Titulo<input name="title" required /></label>
-          <label>Descripcion<textarea name="description" rows="3" required></textarea></label>
-          <label>Categoria<input name="category" required /></label>
-          <div class="inline">
-            <label>Precio<input name="price" type="number" step="0.01" required /></label>
-            <label>Stock inicial<input name="stock" type="number" required /></label>
-            <label>Descuento %<input name="discount" type="number" min="0" max="100" step="1" /></label>
+        <form class="grid" [formGroup]="createForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="inline" style="gap:1.75rem; flex-wrap:wrap; align-items:flex-start; margin-bottom:1.25rem;">
+            <label style="flex:1 1 280px; min-width:240px; max-width:505px; gap:0.35rem; display:flex; flex-direction:column;">Titulo<input formControlName="title" required /></label>
+            <label style="flex:1 1 280px; min-width:240px; max-width:505px; gap:0.35rem; display:flex; flex-direction:column;">Categoria
+              <select formControlName="category" required style="min-height:38px;">
+                <option value="" disabled selected hidden>Selecciona una categoria</option>
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+            </label>
+          </div>
+          <label style="width:100%; max-width:1020px; margin-bottom:1.2rem; display:flex; flex-direction:column; gap:0.35rem;">Descripcion<textarea formControlName="description" rows="3" required></textarea></label>
+          <div class="inline" style="gap:1.6rem; flex-wrap:wrap; align-items:flex-start; margin-bottom:1.3rem;">
+            <label style="flex:1 1 220px; min-width:180px; max-width:237px; display:flex; flex-direction:column; gap:0.35rem;">Precio<input formControlName="price" type="number" step="0.01" required /></label>
+            <label style="flex:1 1 220px; min-width:180px; max-width:237px; display:flex; flex-direction:column; gap:0.35rem;">Stock inicial<input formControlName="stock" type="number" required /></label>
+            <label style="flex:1 1 220px; min-width:180px; max-width:237px; display:flex; flex-direction:column; gap:0.35rem;">Descuento %<input formControlName="discount" type="number" min="0" max="100" step="1" /></label>
+            <label style="flex:1 1 200px; min-width:170px; max-width:237px; display:flex; flex-direction:column; gap:0.35rem;">Marca<input formControlName="brand" /></label>
           </div>
           <div class="inline">
-            <label>Marca<input name="brand" /></label>
-            <label>Tags<input name="tags" placeholder="separados por coma" /></label>
+            <div class="tags-field">
+              <span>Tags</span>
+              <div class="tags-grid" style="display:grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap:0.5rem 0.75rem; align-items:start;">
+                @for (tag of tags; track tag) {
+                  <label class="tag-option" style="display:flex; align-items:center; gap:0.35rem; font-size:0.9rem;">
+                    <input type="checkbox"
+                           [checked]="createForm.controls.tags.value.includes(tag)"
+                           (change)="onTagToggle(tag, $event.target.checked)" />
+                    <span>{{ tag }}</span>
+                  </label>
+                }
+              </div>
+            </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn primary">Guardar</button>
+            <button type="submit" class="btn primary" [disabled]="createForm.invalid || products.updateLoading">Guardar</button>
             <button type="button" class="btn ghost" (click)="onCancel()">Cancelar</button>
           </div>
+          @if (products.updateError) {
+            <p class="error">{{ products.updateError }}</p>
+          }
         </form>
       </section>
     } @else {
@@ -120,7 +144,10 @@
 
               <footer class="muted owner-card__footer">
                 <span>Tags: {{ product.tags?.join(', ') || 'Sin tags' }}</span>
-                <button type="button" class="btn ghost" (click)="onEdit(product.id)">Editar</button>
+                <div class="actions">
+                  <button type="button" class="btn ghost" (click)="onEdit(product.id)">Editar</button>
+                  <button type="button" class="btn danger" (click)="productSignal.deleteProduct(product.id)" [disabled]="products.updateLoading">Eliminar</button>
+                </div>
               </footer>
             </article>
           }

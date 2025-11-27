@@ -1,59 +1,56 @@
-# TpFinalEcomerce
+# UTN – E‑Commerce Mock (Angular + JSON Server)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+Catálogo, cuentas y administración simulados con Angular consumiendo un backend mock en JSON Server.
 
-## Development server
+## 📌 Qué hace
+- Catálogo con búsqueda por título/categoría/tags y detalle de producto.
+- Carrito con persistencia por usuario, ajuste de cantidades y checkout (placeholder).
+- Autenticación y roles: `user`, `user-seller`, `business`, `admin` (credenciales en `db.json`).
+- Panel “Mi cuenta”: datos personales, upgrade a seller, gestión de perfil.
+- Panel “Mis productos” (seller/business): alta/edición, precio/stock/descuento, tags, deshabilitar/habilitar/eliminar.
+- Panel Admin: gestión de cuentas (ban/unban/delete) y productos (habilitar/deshabilitar/eliminar).
 
-To start a local development server, run:
+## 🔐 Auth y guards
+- Login con credenciales del JSON.
+- Guards por rol en rutas sensibles (`cart`, `accountProducts`, `admin`).
+- Botones y acciones condicionadas por `ownerId`/`role` (no compras tu propio producto, etc.).
 
+## 🛒 Carrito
+- Añadir desde detalle; “Comprar ahora” envía al carrito.
+- Persistencia por `userId`, ajuste de cantidades y eliminación.
+- Acceso solo para roles que pueden comprar.
+
+## 🧰 Stack
+- Angular 20+, Signals y Reactive Forms.
+- JSON Server como backend (`database/db.json`).
+- TypeScript estricto, rutas standalone.
+
+## 📂 Rutas y módulos
+- `/home` catálogo destacado.
+- `/search` búsqueda.
+- `/product/:id` detalle.
+- `/account` menú de cuenta.
+- `/accountDetails` perfil.
+- `/accountProducts` gestión de productos (seller/business).
+- `/cart` carrito de compras.
+- `/checkout` (placeholder).
+- `/admin/accountsManagment`, `/admin/productsManagment` gestion de cuentas/ productos.
+
+## ⚙️ Instalación rápida
 ```bash
-ng serve
+npm install
+# backend 
+npx json-server --watch database/db.json --port 3000
+# frontend
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## ▶️ Uso
+- Logueate con un usuario del `db.json`.
+- Explora catálogo, busca por tags/categoría, abre un producto.
+- “Comprar ahora” lleva al carrito; desde “Mis productos” crea/edita/borra.
+- Admin modera cuentas y productos.
 
-## Code scaffolding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 👥 Autores
+Axel Llobet, Ezequiel Martinez y Enzo Sansalone

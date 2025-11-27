@@ -18,7 +18,9 @@
         @if (userMenuOpen()) {
           <div class="user-menu__menu" role="menu">
             <a routerLink="/accountDetails" role="menuitem">Mi perfil</a>
-            <a routerLink="/account-transactions" role="menuitem">Compras y ventas</a>
+            @if (auth.role !== Role.Admin && auth.role !== Role.Business) {
+              <a routerLink="/account-transactions" role="menuitem">Compras y ventas</a>
+            }
             @if (auth.role === Role.Seller || auth.role === Role.Business) {
               <a routerLink="/accountProducts" role="menuitem">Mis productos</a>
             } @else if (auth.role === Role.Admin) {
@@ -51,6 +53,7 @@
       </button>
       @if (categoryOpen()) {
         <div class="nav-category__menu" role="menu">
+          <a routerLink="/category/all" role="menuitem">Todos</a>
           <a routerLink="/category/electronic" role="menuitem">Electrónica</a>
           <a routerLink="/category/sports" role="menuitem">Deportes</a>
           <a routerLink="/category/home-appliance" role="menuitem">Hogar</a>
@@ -64,8 +67,8 @@
     @if (!auth.logged) {
       <a class="btn ghost" routerLink="/sign-up">Crear cuenta</a>
       <a class="btn" [routerLink]="['/login']" [queryParams]="{ returnUrl: currentUrl() }">Iniciar sesión</a>
-    } @else {
-      <a class="btn ghost" routerLink="/cart">Carrito</a>
+    } @else if (auth.role !== Role.Admin && auth.role !== Role.Business) {
+      <button type="button" class="btn ghost" (click)="goToCart()">Carrito</button>
     }
   </div>
 </nav>

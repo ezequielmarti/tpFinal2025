@@ -22,12 +22,12 @@
     <div class="cart-grid">
       <div class="cart-items">
         @for (item of itemsList; track item.productId) {
-          <article class="card cart-item">
-            <div>
+          <article class="card cart-item row">
+            <div class="row-title">
               <h3>{{ item.title }}</h3>
-              <p class="muted">Precio: ${{ item.price }}</p>
+              <span class="muted">Precio: ${{ item.price }}</span>
             </div>
-            <div class="cart-controls">
+            <div class="cart-controls row-actions">
               <div class="quantity">
                 <button type="button" class="btn ghost" (click)="decrease(item.productId)">-</button>
                 <span aria-live="polite">{{ item.amount }}</span>

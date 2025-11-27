@@ -1,5 +1,4 @@
-@let auth = authState();
-@let state = state();
+@let state = productState();
 @let active = activeProducts();
 @let blocked = blockedProducts();
 
@@ -30,11 +29,10 @@
               <li>
                 <div>
                   <strong>{{ prod.title }}</strong>
-                  <div class="muted">ID: {{ prod.id }} · Dueño: {{ prod.ownerId || 'n/d' }}</div>
+                  <div class="muted">ID: {{ prod.id }} · Dueño: {{ $any(prod).ownerId || 'n/d' }}</div>
                 </div>
                 <div class="actions">
                   <button type="button" class="btn danger" (click)="disableProduct(prod.id)">Deshabilitar</button>
-                  <button type="button" class="btn ghost" (click)="banOwner(prod.ownerId)">Banear cuenta</button>
                 </div>
               </li>
             }
@@ -52,7 +50,7 @@
               <li>
                 <div>
                   <strong>{{ prod.title }}</strong>
-                  <div class="muted">ID: {{ prod.id }} · Dueño: {{ prod.ownerId || 'n/d' }}</div>
+                  <div class="muted">ID: {{ prod.id }} · Dueño: {{ $any(prod).ownerId || 'n/d' }}</div>
                 </div>
                 <div class="actions">
                   <button type="button" class="btn" (click)="enableProduct(prod.id)">Habilitar</button>

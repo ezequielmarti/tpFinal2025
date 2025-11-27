@@ -43,12 +43,30 @@
       <div class="inline">
         <label>
           <span>Categoría</span>
-          <input type="text" formControlName="category" />
+          <select formControlName="category" required>
+            <option value="" disabled selected hidden>Selecciona una categoria</option>
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
         </label>
         <label>
           <span>Marca</span>
           <input type="text" formControlName="brand" />
         </label>
+      </div>
+      <div class="tags-field">
+        <span>Tags</span>
+        <div class="tags-grid" style="display:grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap:0.5rem 0.75rem; align-items:start;">
+          @for (tag of tagsList; track tag) {
+            <label class="tag-option" style="display:flex; align-items:center; gap:0.35rem; font-size:0.9rem;">
+              <input type="checkbox"
+                     [checked]="form.controls.tags.value.includes(tag)"
+                     (change)="onTagToggle(tag, $event.target.checked)" />
+              <span>{{ tag }}</span>
+            </label>
+          }
+        </div>
       </div>
       <div class="form-actions">
         <button class="btn primary" type="submit">Guardar</button>

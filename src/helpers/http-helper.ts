@@ -1,5 +1,5 @@
 import { catchError, Observable, switchMap, throwError } from "rxjs";
-import { AuthService } from "../app/service/auth-managment";
+import { AuthService } from "../app/general/login/auth-managment";
 
 export function withAuthRetry<T>(
   requestFn: () => Observable<T>,

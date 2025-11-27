@@ -1,12 +1,13 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject, signal } from "@angular/core";
-import { tap, catchError, of } from "rxjs";
-import { Url } from "../../../common/const";
+import { tap, catchError, of, switchMap } from "rxjs";
+import { Url, isMockApi } from "../../../common/const";
 import { withAuthRetry } from "../../../helpers/http-helper";
 import { AccountSchema } from "../../../schema/user/account";
 import { AuthService } from "../../general/login/auth-managment";
 import { UpdateAdminSchema, UpdateBusinessSchema, UpdateUserSchema } from "../../../schema/user/create-account";
 import { CreateAddressSchema, CreateStoreSchema } from "../../../schema/user/create-address-store";
+import { ERole } from "../../../enum/role";
 
 
 @Injectable({
@@ -29,6 +30,69 @@ export class AccountDetailsService {
       loading: true,
       error: null
     }));
+
+    if (isMockApi) {
+      const username = this.authService.authState().username;
+      if (!username) {
+        this.accountState.update(() => ({
+          data: null,
+          loading: false,
+          error: 'No hay sesión activa'
+        }));
+        return;
+      }
+      const params = new HttpParams().set('username', username);
+      this.http.get<AccountSchema[]>(`${Url}/account`, { params })
+        .pipe(
+          tap((accounts) => {
+            const base = accounts?.[0] as (AccountSchema & { id?: string }) | undefined;
+            if (!base) {
+              this.accountState.update(() => ({
+                data: null,
+                loading: false,
+                error: 'No se encontró la cuenta'
+              }));
+              return;
+            }
+            const normalized: AccountSchema = {
+              id: (base as any).id ?? '',
+              username: base.username,
+              role: base.role,
+              status: (base as any).status ?? null,
+              email: (base as any).email ?? '',
+              meta: {
+                created: (base as any).meta?.created ?? new Date(),
+                updated: (base as any).meta?.updated ?? new Date(),
+                deletedBy: (base as any).meta?.deletedBy ?? null
+              },
+              userProfile: (base as any).userProfile ?? ({
+                firstname: (base as any).firstname,
+                lastname: (base as any).lastname,
+                birth: (base as any).birth,
+                phone: (base as any).phone,
+              } as any),
+              businessProfile: (base as any).businessProfile,
+              adminProfile: (base as any).adminProfile,
+              address: (base as any).address ?? [],
+              store: (base as any).store ?? []
+            };
+            this.accountState.update(() => ({
+              data: normalized,
+              loading: false,
+              error: null
+            }));
+          }),
+          catchError((err) => {
+            this.accountState.update(() => ({
+              data: null,
+              loading: false,
+              error: err.error?.message || 'Error cargando los datos'
+            }));
+            return of(null);
+          })
+        ).subscribe();
+      return;
+    }
 
     withAuthRetry<AccountSchema>(() =>
       this.http.get<AccountSchema>(`${this.apiUrl}`, {withCredentials: true}),
@@ -61,6 +125,48 @@ export class AccountDetailsService {
       error: null
     }));
 
+    if (isMockApi) {
+      const username = this.authService.authState().username;
+      if (!username) {
+        this.accountState.update((state) => ({
+          ...state,
+          loading: false,
+          error: 'No se encontró la cuenta'
+        }));
+        return;
+      }
+      const params = new HttpParams().set('username', username);
+      this.http.get<AccountSchema[]>(`${Url}/account`, { params })
+        .pipe(
+          switchMap((accounts) => {
+            const current = accounts?.[0] as (AccountSchema & { id?: string }) | undefined;
+            if (!current || !current.id) {
+              throw new Error('No se encontró la cuenta');
+            }
+            return this.http.patch<AccountSchema>(`${Url}/account/${current.id}`, {
+              ...account,
+              role: (account as any).role || current.role
+            });
+          }),
+          tap((result) => {
+            this.accountState.update(() => ({
+              data: result,
+              loading: false,
+              error: null
+            }));
+          }),
+          catchError((err) => {
+            this.accountState.update((state) => ({
+              ...state,
+              loading: false,
+              error: err.error?.message || err.message || 'Error actualizando los datos'
+            }));
+            return of(null);
+          })
+        ).subscribe();
+      return;
+    }
+
     withAuthRetry<AccountSchema>(() =>
       this.http.put<AccountSchema>(`${this.apiUrl}`, {account}, {withCredentials: true}),
       this.authService
@@ -72,6 +178,7 @@ export class AccountDetailsService {
             loading: false,
             error: null
           }));
+          this.getInfo();
         }
       }),
       catchError((err) => {
@@ -175,6 +282,85 @@ export class AccountDetailsService {
           ...state,
           loading: false,
           error: err.error?.error || 'Error creando el local.' 
+        }));
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  requestSellerUpgrade(payload: { title: string; contactEmail: string }): void {
+    this.accountState.update((state) => ({
+      ...state,
+      loading: true,
+      error: null
+    }));
+
+    if (isMockApi) {
+      const username = this.authService.authState().username;
+      if (!username) {
+        this.accountState.update((state) => ({
+          ...state,
+          loading: false,
+          error: 'No se encontró la cuenta'
+        }));
+        return;
+      }
+      const params = new HttpParams().set('username', username);
+      this.http.get<AccountSchema[]>(`${Url}/account`, { params })
+        .pipe(
+          switchMap((accounts) => {
+            const current = accounts?.[0] as (AccountSchema & { id?: string }) | undefined;
+            if (!current || !current.id) {
+              throw new Error('No se encontró la cuenta');
+            }
+            const update = {
+              businessProfile: {
+                title: payload.title,
+                contactEmail: payload.contactEmail
+              },
+              role: ERole.Seller
+            };
+            return this.http.patch<AccountSchema>(`${Url}/account/${current.id}`, update);
+          }),
+          tap((result) => {
+            this.accountState.update(() => ({
+              data: result,
+              loading: false,
+              error: null
+            }));
+          }),
+          catchError((err) => {
+            this.accountState.update((state) => ({
+              ...state,
+              loading: false,
+              error: err.error?.message || err.message || 'Error al solicitar cambio a seller'
+            }));
+            return of(null);
+          })
+        ).subscribe();
+      return;
+    }
+
+    const update: UpdateBusinessSchema = {
+      title: payload.title,
+      contactEmail: payload.contactEmail
+    };
+    withAuthRetry<AccountSchema>(() =>
+      this.http.put<AccountSchema>(`${this.apiUrl}`, { account: { ...update, role: ERole.Seller } as any }, { withCredentials: true }),
+      this.authService
+    ).pipe(
+      tap((result) => {
+        this.accountState.update(() => ({
+          data: result,
+          loading: false,
+          error: null
+        }));
+      }),
+      catchError((err) => {
+        this.accountState.update((state) => ({
+          ...state,
+          loading: false,
+          error: err.error?.message || 'Error al solicitar cambio a seller'
         }));
         return of(null);
       })

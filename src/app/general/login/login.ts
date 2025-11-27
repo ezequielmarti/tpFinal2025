@@ -24,7 +24,7 @@ export class Login {
 
   constructor() {
     const qpReturn = this.route.snapshot.queryParamMap.get('returnUrl');
-    this.returnUrl = qpReturn || this.router.lastSuccessfulNavigation?.finalUrl?.toString() || '/home';
+    this.returnUrl = qpReturn || '/account';
 
     effect(() => {
       const auth = this.auth.authState();

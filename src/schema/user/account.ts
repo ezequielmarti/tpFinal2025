@@ -2,6 +2,7 @@ import { ERole } from "../../enum/role";
 import { EStatus } from "../../enum/status";
 
 export interface PartialAccountSchema {
+    id: string;
     username: string;
     role: ERole;
     status: EStatus; 

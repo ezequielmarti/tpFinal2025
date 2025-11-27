@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject, signal } from "@angular/core";
-import { Url } from "../../../common/const";
+import { Url, isMockApi } from "../../../common/const";
 import { PartialProductSchema } from "../../../schema/Product/product";
-import { catchError, of, tap } from "rxjs";
+import { catchError, of, tap, map } from "rxjs";
 
 @Injectable({
   providedIn: 'root',
@@ -18,22 +18,58 @@ export class SearchService {
   });
 
   search(contain: string): void {
+    const term = (contain || '').trim();
     let params = new HttpParams();
+    params = params.set('contain', term);
 
-    params = params.set('contain', contain);
-    
     this.searchState.update((state) => ({
         ...state,
         loading: true,
         error: null
     }));
 
+    if (isMockApi) {
+      this.http.get<PartialProductSchema[]>(`${this.apiUrl}`)
+        .pipe(
+          map((items) => {
+            const lowered = term.toLowerCase();
+            return (items || []).filter((p) => {
+              if ((p as any).status === 'blocked') return false;
+              const haystack = [
+                p.title,
+                p.description,
+                p.brand,
+                (p as any).category,
+                ...(p.tags || []),
+              ].filter(Boolean).map((v) => String(v).toLowerCase());
+              return haystack.some((v) => v.includes(lowered));
+            });
+          }),
+          tap((filtered) => {
+            this.searchState.update(() => ({
+              data: filtered,
+              loading: false,
+              error: null
+            }));
+          }),
+          catchError((err) => {
+            this.searchState.update((state) => ({
+              data: [],
+              loading: false,
+              error: err.error?.error || 'Error en la busqueda'
+            }));
+            return of(null);
+          })
+        ).subscribe();
+      return;
+    }
+
     this.http.get<PartialProductSchema[]>(`${this.apiUrl}/search`, { params }) 
-    .pipe(
+      .pipe(
         tap({
             next: (response) => {
                 this.searchState.update(() => ({
-                    data: response,
+                    data: response.filter((p) => (p as any).status !== 'blocked'),
                     loading: false,
                     error: null
                 }));

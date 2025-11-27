@@ -8,7 +8,6 @@ type ProductActions = {
   disableProduct?: (id: string) => void;
   enableProduct?: (id: string) => void;
   removeProduct?: (id: string) => void;
-  banOwner?: (ownerId: string | null | undefined) => void;
 };
 
 @Component({
@@ -26,12 +25,12 @@ export class ProductsManagment {
   protected readonly authState = computed(() => this.auth.authState());
   protected readonly isAdmin = computed(() => this.authState().role === ERole.Admin);
 
-  protected readonly state = computed(() => this.svc.state().productList);
+  protected readonly productState = computed(() => this.svc.state().productList);
   protected readonly activeProducts = computed(() =>
-    this.state().data.filter((p) => (p as any).status !== 'blocked')
+    this.productState().data.filter((p) => (p as any).status !== 'blocked')
   );
   protected readonly blockedProducts = computed(() =>
-    this.state().data.filter((p) => (p as any).status === 'blocked')
+    this.productState().data.filter((p) => (p as any).status === 'blocked')
   );
 
   constructor() {
@@ -59,10 +58,5 @@ export class ProductsManagment {
 
   removeProduct(id: string): void {
     this.svcActions.removeProduct?.(id);
-  }
-
-  banOwner(ownerId: string | null | undefined): void {
-    if (!ownerId) return;
-    this.svcActions.banOwner?.(ownerId);
   }
 }

@@ -57,64 +57,40 @@
 
           <div class="shipping">{{ shippingMessage() }}</div>
 
-          @if (auth.logged && !isOwner()) {
+          @if (auth.logged && isOwner()) {
             <div class="actions">
-              <button type="button" class="btn primary">Comprar ahora</button>
-              <button type="button" class="btn ghost">Agregar al carrito</button>
-            </div>
-          } @else if (auth.logged && isOwner()) {
-            <div class="actions">
-              <span class="badge muted">Es tu publicación</span>
+              <span class="badge muted">Es tu publicacion</span>
               <a class="btn ghost" [routerLink]="['/productUpdate', product.data.id]">Editar producto</a>
             </div>
+          } @else if (canBuy()) {
+            <div class="actions">
+              <button type="button" class="btn primary" (click)="buyNow()">Comprar ahora</button>
+              <button type="button" class="btn ghost" (click)="addToCart()">Agregar al carrito</button>
+            </div>
           } @else {
-            <p class="muted">Inicia sesión para comprar o agregar al carrito.</p>
+            <p class="muted">Inicia sesion para comprar o agregar al carrito.</p>
           }
         </div>
       </section>
 
       <section class="card">
-        <h3>Descripción</h3>
+        <h3>Descripcion</h3>
         <p>{{ product.data.description }}</p>
-      </section>
-
-      <section class="card">
-        <h3>Envío y garantía</h3>
-        <div class="grid">
-          <div>
-            <p class="muted">Peso</p>
-            <strong>{{ product.data.weight }} kg</strong>
+        @if (product.data.tags?.length) {
+          <div class="tags" style="display:flex; align-items:center; gap: 0.1em; flex-wrap:wrap;">
+            <span class="muted">Tags:</span>
+            <div class="tag-list" style="display:flex; flex-wrap:wrap; gap:0.1rem;">
+              @for (tag of product.data.tags; track tag) {
+                <span class="tag badge muted" style="padding:0.25rem 0.5rem; border-radius:999px;">{{ tag }}  |</span>
+              }
+            </div>
           </div>
-          <div>
-            <p class="muted">Garantía</p>
-            <strong>{{ product.data.warrantyInformation || 'No especificada' }}</strong>
-          </div>
-          <div>
-            <p class="muted">Envío</p>
-            <strong>{{ product.data.shippingInformation || 'Consultar' }}</strong>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Tienda</h3>
-        @if (product.data.store?.length) {
-          <ul class="list">
-            @for (store of product.data.store; track $index) {
-              <li>
-                <strong>{{ store.address }}</strong>
-                <div class="muted">{{ store.city }} - {{ store.country }}</div>
-                <div class="muted">Tel: {{ store.phone }}</div>
-              </li>
-            }
-          </ul>
-        } @else {
-          <p class="muted">Sin datos de tienda.</p>
         }
       </section>
 
+      <!--
       <section class="card">
-        <h3>Reseñas</h3>
+        <h3>Resenas</h3>
         @if (auth.logged && canReview()) {
           <form class="grid" [formGroup]="reviewForm" (ngSubmit)="submitReview()" novalidate>
             <div class="stars">
@@ -128,14 +104,14 @@
               <textarea rows="3" formControlName="comment" placeholder="Escribe tu experiencia"></textarea>
             </label>
             <div class="form-actions">
-              <button type="submit" class="btn primary">Enviar reseña</button>
+              <button type="submit" class="btn primary">Enviar resena</button>
             </div>
           </form>
         } @else if (auth.logged && hasReview()) {
-          <p class="muted">Ya dejaste una reseña.</p>
-          <button type="button" class="btn ghost" (click)="deleteReview()">Eliminar mi reseña</button>
+          <p class="muted">Ya dejaste una resena.</p>
+          <button type="button" class="btn ghost" (click)="deleteReview()">Eliminar mi resena</button>
         } @else {
-          <p class="muted">Inicia sesión para dejar una reseña.</p>
+          <p class="muted">Inicia sesion para dejar una resena.</p>
         }
 
         @if (product.data.reviews?.length) {
@@ -153,9 +129,10 @@
             }
           </ul>
         } @else {
-          <p class="muted">Sin reseñas aún.</p>
+          <p class="muted">Sin resenas aun.</p>
         }
       </section>
+      -->
     </section>
   }
 }

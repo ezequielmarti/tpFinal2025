@@ -3,6 +3,8 @@ import { AccountProducts } from './accounts/account-products/account-products';
 import { AccountDetails } from './accounts/account-details/account-details';
 import { AccountTransactions } from './accounts/account-transactions/account-transactions';
 import { Cart } from './accounts/cart/cart';
+import { cartGuard } from './auth/cart-guard';
+import { authGuard, adminGuard, sellerGuard, buyerGuard } from './general/auth-guards';
 import { Checkout } from './accounts/checkout/checkout';
 import { CheckoutResult } from './accounts/checkout-result/checkout-result';
 import { ProductUpdate } from './accounts/product-update/product-update';
@@ -21,16 +23,16 @@ export const routes: Routes = [
   { path: 'home', component: Home },
   { path: 'sign-up', component: SignUp },
   { path: 'login', component: Login },
-  { path: 'account', component: AccountMenu },
-  { path: 'accountDetails', component: AccountDetails },
-  { path: 'accountProducts', component: AccountProducts },
-  { path: 'account-transactions', component: AccountTransactions },
-  { path: 'cart', component: Cart },
-  { path: 'productUpdate/:id', component: ProductUpdate },
-  { path: 'checkout', component: Checkout },
-  { path: 'checkoutResult', component: CheckoutResult },
-  { path: 'admin/accountsManagment', component: AccountsManagment },
-  { path: 'admin/productsManagment', component: ProductsManagment },
+  { path: 'account', component: AccountMenu, canActivate: [authGuard] },
+  { path: 'accountDetails', component: AccountDetails, canActivate: [authGuard] },
+  { path: 'accountProducts', component: AccountProducts, canActivate: [sellerGuard] },
+  { path: 'account-transactions', component: AccountTransactions, canActivate: [authGuard] },
+  { path: 'cart', component: Cart, canActivate: [cartGuard] },
+  { path: 'productUpdate/:id', component: ProductUpdate, canActivate: [sellerGuard] },
+  { path: 'checkout', component: Checkout, canActivate: [authGuard, buyerGuard] },
+  { path: 'checkoutResult', component: CheckoutResult, canActivate: [authGuard, buyerGuard] },
+  { path: 'admin/accountsManagment', component: AccountsManagment, canActivate: [adminGuard] },
+  { path: 'admin/productsManagment', component: ProductsManagment, canActivate: [adminGuard] },
   { path: 'category/:id', component: Category },
   { path: 'search', component: Search },
   { path: 'product/:id', component: ProductDetails },

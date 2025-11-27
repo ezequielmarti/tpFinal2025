@@ -2,10 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { NgOptimizedImage } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductDetailsService } from './product-details-service';
 import { AuthService } from '../login/auth-managment';
 import { CreateReviewSchema } from '../../../schema/Product/createReview';
+import { ERole } from '../../../enum/role';
+import { CartService } from '../../accounts/cart/cart-service';
 
 @Component({
   selector: 'app-product-details',
@@ -18,7 +20,9 @@ export class ProductDetails {
   protected readonly productSignal = inject(ProductDetailsService);
   protected readonly authSignal = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly cartService = inject(CartService);
 
   protected readonly stars = [1, 2, 3, 4, 5];
   protected readonly fallbackImage = 'https://picsum.photos/seed/fallback/600';
@@ -31,6 +35,12 @@ export class ProductDetails {
   protected readonly productState = computed(() => this.productSignal.productState());
   protected readonly productData = computed(() => this.productState().data);
   protected readonly authState = computed(() => this.authSignal.authState());
+  protected readonly canBuy = computed(() => {
+    const auth = this.authState();
+    if (!auth.logged) return false;
+    if (auth.role === ERole.Admin || auth.role === ERole.Business) return false;
+    return !this.isOwner();
+  });
 
   protected readonly finalPrice = computed(() => {
     const data = this.productData();
@@ -51,10 +61,16 @@ export class ProductDetails {
   protected readonly isOwner = computed(() => {
     const auth = this.authState();
     const prod = this.productData();
-    if (!auth.logged || !prod || !auth.username) return false;
-    const ownerName = (prod as any).accountName;
-    if (ownerName) {
-      return ownerName.toLowerCase() === auth.username.toLowerCase();
+    if (!auth.logged || !prod) return false;
+    const ownerId = (prod as any).ownerId;
+    if (ownerId && auth.id) {
+      return ownerId === auth.id;
+    }
+    if (auth.username) {
+      const ownerName = (prod as any).accountName;
+      if (ownerName) {
+        return ownerName.toLowerCase() === auth.username.toLowerCase();
+      }
     }
     return false;
   });
@@ -111,6 +127,22 @@ export class ProductDetails {
     const prod = this.productData();
     if (!prod) return;
     this.productSignal.deleteReview(prod.id);
+  }
+
+  addToCart(): void {
+    const prod = this.productData();
+    if (!prod || !this.canBuy()) return;
+    this.cartService.addToCart({
+      productId: prod.id,
+      title: prod.title,
+      price: this.finalPrice() ?? prod.price,
+      amount: 1
+    });
+  }
+
+  buyNow(): void {
+    this.addToCart();
+    this.router.navigate(['/cart']);
   }
 
   private cleanComment(value: string): string {

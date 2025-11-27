@@ -76,30 +76,26 @@
           <section class="card">
             <h3>Editar perfil</h3>
             <p class="muted">Completa los datos y guarda para actualizar.</p>
-            <div class="inline">
-              <label>Nombre<input placeholder="{{ account.data.userProfile?.firstname }}" /></label>
-              <label>Apellido<input placeholder="{{ account.data.userProfile?.lastname }}" /></label>
-              <label>Telefono<input placeholder="{{ account.data.userProfile?.phone || 'Sin telefono' }}" /></label>
-              <label>Fecha nac.<input type="date" /></label>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
-            </div>
+            <form class="inline" [formGroup]="userForm" (ngSubmit)="saveUser()">
+              <label>Nombre<input formControlName="firstname" placeholder="Nombre" /></label>
+              <label>Apellido<input formControlName="lastname" placeholder="Apellido" /></label>
+              <label>Telefono<input formControlName="phone" placeholder="Sin telefono" /></label>
+              <label>Fecha nac.<input type="date" formControlName="birth" /></label>
+              <div class="form-actions">
+                <button type="submit" class="btn" [disabled]="userForm.invalid || !userForm.dirty">Guardar</button>
+                <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
+              </div>
+            </form>
             @if(auth.role === Role.User){
               <div class="seller-upgrade card muted">
                 <h4>Quiero vender</h4>
-                <p class="muted">Completa tus datos comerciales para pasar a cuenta seller.</p>
-                <div class="inline">
-                  <label>Nombre publico<input placeholder="Tu marca" /></label>
-                  <label>Correo de contacto<input type="email" placeholder="contacto@tienda.com" /></label>
-                </div>
+                <p class="muted">Tu cuenta pasara a seller y no podras volver a solo comprador.</p>
                 <div class="form-actions">
-                  <button type="button" class="btn" disabled>Solicitar cambio a seller</button>
+                  <button type="button" class="btn" (click)="requestSeller()">Solicitar cambio a seller</button>
                 </div>
               </div>
             }@else{
-              <p class="muted">Tu cuenta ya es seller. Pronto podras editar datos de negocio aqui.</p>
+              <p class="muted">Tu cuenta ya es seller</p>
             }
           </section>
         }
@@ -137,18 +133,20 @@
         }@else{
           <section class="card">
             <h3>Editar negocio</h3>
-            <div class="inline">
-              <label>Nombre publico<input placeholder="{{ account.data.businessProfile?.title }}" /></label>
-              <label>Correo de contacto<input type="email" placeholder="{{ account.data.businessProfile?.contactEmail }}" /></label>
-            </div>
-            <label>Bio<textarea rows="3" placeholder="{{ account.data.businessProfile?.bio || 'Sin bio' }}"></textarea></label>
-            <div class="inline">
-              <label>Telefono<input placeholder="{{ account.data.businessProfile?.phone }}" /></label>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
-            </div>
+            <form [formGroup]="businessForm" (ngSubmit)="saveBusiness()">
+              <div class="inline">
+                <label>Nombre publico<input formControlName="title" placeholder="Nombre público" /></label>
+                <label>Correo de contacto<input type="email" formControlName="contactEmail" placeholder="contacto@tienda.com" /></label>
+              </div>
+              <label>Bio<textarea rows="3" formControlName="bio" placeholder="Sin bio"></textarea></label>
+              <div class="inline">
+                <label>Telefono<input formControlName="phone" placeholder="Teléfono" /></label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn" [disabled]="businessForm.invalid || !businessForm.dirty">Guardar</button>
+                <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
+              </div>
+            </form>
           </section>
         }
       }
@@ -165,14 +163,16 @@
         }@else{
           <section class="card">
             <h3>Editar perfil admin</h3>
-            <div class="inline">
-              <label>Nombre publico<input placeholder="{{ account.data.adminProfile?.publicName }}" /></label>
-              <label>Email<input placeholder="{{ account.data.email }}" /></label>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn" disabled>Guardar</button>
-              <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
-            </div>
+            <form [formGroup]="adminForm" (ngSubmit)="saveAdmin()">
+              <div class="inline">
+                <label>Nombre publico<input formControlName="publicName" placeholder="Nombre público" /></label>
+                <label>Email<input formControlName="email" placeholder="Email" /></label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn" [disabled]="adminForm.invalid || !adminForm.dirty">Guardar</button>
+                <button type="button" class="btn ghost" (click)="onEditToggle(false)">Cancelar</button>
+              </div>
+            </form>
           </section>
         }
       }

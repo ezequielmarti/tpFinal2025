@@ -4,6 +4,7 @@ import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { ERole } from '../../../enum/role';
+import { CartService } from '../../accounts/cart/cart-service';
 import { AuthService } from '../login/auth-managment';
 
 @Component({
@@ -17,6 +18,7 @@ export class Nav {
   protected readonly authSignal = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly cartService = inject(CartService);
 
   readonly Role = ERole;
 
@@ -64,6 +66,10 @@ export class Nav {
 
   closeCategoryMenu(): void {
     this.categoryOpen.set(false);
+  }
+
+  goToCart(): void {
+    this.router.navigate(['/cart']);
   }
 
   onSearch(): void {

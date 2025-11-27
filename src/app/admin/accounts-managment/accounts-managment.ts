@@ -45,4 +45,9 @@ export class AccountsManagment {
     if (!username || !this.isAdmin()) return;
     this.svc.unbanAccount(username);
   }
+
+  removeBanned(username: string): void {
+    if (!username || !this.isAdmin()) return;
+    this.svc.removeBannedAccount(username);
+  }
 }

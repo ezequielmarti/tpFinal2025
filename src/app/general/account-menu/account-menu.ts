@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { getRoleGroup } from '../../../enum/role';
+import { ERole, getRoleGroup } from '../../../enum/role';
 import { AuthService } from '../login/auth-managment';
 
 @Component({
@@ -12,5 +12,6 @@ import { AuthService } from '../login/auth-managment';
 export class AccountMenu {
   protected readonly authSignal = inject(AuthService);
   getRoleGroup = getRoleGroup;
+  Role = ERole;
 
 }

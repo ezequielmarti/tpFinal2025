@@ -14,10 +14,10 @@ export class Home {
   protected readonly productSignal = inject(HomeService);
 
   protected readonly homeState = computed(() => this.productSignal.homeState());
-  protected readonly featured = computed(() => this.homeState().featuredList);
-  protected readonly catalog = computed(() => this.homeState().productList);
+  protected readonly featuredState = computed(() => this.homeState().featuredList);
+  protected readonly catalogState = computed(() => this.homeState().productList);
   protected readonly catalogItems = computed(() =>
-    Array.from(this.catalog().data.values()).flat()
+    Array.from(this.catalogState().data.values()).flat()
   );
 
   protected readonly fallbackImage = 'https://picsum.photos/seed/fallback/400';

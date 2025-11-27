@@ -12,6 +12,9 @@
           <li><a routerLink="/accountDetails">Mi perfil</a></li>
           <li><a routerLink="/account-transactions">Compras y ventas</a></li>
           <li><a routerLink="/cart">Carrito</a></li>
+          @if (auth.role === Role.Seller) {
+            <li><a routerLink="/accountProducts">Mis productos</a></li>
+          }
         </ul>
       }
       @case ('business') {

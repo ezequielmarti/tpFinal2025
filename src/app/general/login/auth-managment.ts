@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { tap, catchError, of, Observable, switchMap } from 'rxjs';
-import { Url } from '../../../common/const';
+import { Url, isMockApi } from '../../../common/const';
 import { ERole } from '../../../enum/role';
 import { EStatus } from '../../../enum/status';
 import { PartialAccountSchema } from '../../../schema/user/account';
@@ -18,6 +18,7 @@ export class AuthService {
 
   authState = signal({
     logged: false,
+    id: null as string | null,
     username: null as string | null,
     role: null as ERole | null,
     loading: false,
@@ -28,6 +29,7 @@ export class AuthService {
   setState(): void {
     this.authState.update(() => ({
       logged: false,
+      id: null,
       username: null,
       role: null,
       status: null,
@@ -44,12 +46,52 @@ export class AuthService {
       error: null
     }));
 
-    this.http.post<PartialAccountSchema>(`${this.apiUrl}/login`, { auth }, {withCredentials: true})
+    if (isMockApi) {
+      const params = new HttpParams().set('username', auth.account);
+      this.http.get<PartialAccountSchema[]>(`${Url}/account`, { params })
+        .pipe(
+          tap({
+            next: (accounts) => {
+              const found = accounts[0] as (PartialAccountSchema & { id?: string; password?: string });
+              if (!found || (found as any).password !== auth.password) {
+                this.authState.update((state) => ({
+                  ...state,
+                  loading: false,
+                  error: 'Credenciales inválidas'
+                }));
+                return;
+              }
+              this.authState.update(() => ({
+                logged: true,
+                id: found.id ?? null,
+                username: found.username,
+                role: found.role,
+                status: found.status ?? null,
+                loading: false,
+                error: null
+              }));
+            }
+          }),
+          catchError((err) => {
+            this.authState.update((state) => ({
+              ...state,
+              loading: false,
+              error: err.error?.message || 'Error al ingresar'
+            }));
+            return of(null);
+          })
+        )
+        .subscribe();
+      return;
+    }
+
+          this.http.post<PartialAccountSchema>(`${this.apiUrl}/login`, { auth }, {withCredentials: true})
     .pipe(
       tap({
         next: (response) => {
           this.authState.update(() => ({
             logged: true,
+            id: response.id ?? null,
             username: response.username,
             role: response.role,
             loading: false,
@@ -70,6 +112,11 @@ export class AuthService {
   }
 
   logOut(): void {
+    if (isMockApi) {
+      this.setState();
+      return;
+    }
+
     this.setState();
     this.authState.update((state) => ({
       ...state,
@@ -96,6 +143,15 @@ export class AuthService {
   }
 
   refresh(): Observable<boolean> {
+    if (isMockApi) {
+      this.authState.update((state) => ({
+        ...state,
+        loading: false,
+        error: null,
+      }));
+      return of(true);
+    }
+
     this.setState();
     this.authState.update(state => ({
       ...state,
@@ -108,6 +164,7 @@ export class AuthService {
       tap((response) => {
         this.authState.update(() => ({
           logged: true,
+          id: response.id ?? null,
           username: response.username,
           role: response.role,
           status: response.status,

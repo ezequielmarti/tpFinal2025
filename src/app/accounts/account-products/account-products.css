@@ -115,8 +115,8 @@
 
 .update-field {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.6rem;
+  grid-template-columns: 0.9fr ;
+  gap: 0.5rem;
   align-items: stretch;
 }
 

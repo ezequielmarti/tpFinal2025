@@ -1,7 +1,7 @@
-@let featured = featured();
-@let catalog = catalog();
+@let featuredView = featuredState();
+@let catalogView = catalogState();
 
-@if (featured.error && catalog.error) {
+@if (featuredView.error && catalogView.error) {
   <div class="alert error">No pudimos cargar los productos.</div>
 } @else {
   <header class="hero">
@@ -15,6 +15,7 @@
   <section class="quick-links">
     <h3>Explorá categorías</h3>
     <div class="card-row">
+      <a class="chip" routerLink="/category/all">Todos</a>
       <a class="chip" routerLink="/category/electronic">Electrónica</a>
       <a class="chip" routerLink="/category/sports">Deportes</a>
       <a class="chip" routerLink="/category/home-appliance">Hogar</a>
@@ -24,15 +25,15 @@
 
   <section class="featured">
     <h2>Destacados</h2>
-    @if (featured.loading) {
+    @if (featuredView.loading) {
       <p>Cargando destacados...</p>
-    } @else if (featured.error) {
-      <div class="alert error">{{ featured.error }}</div>
-    } @else if (!featured.data.length) {
+    } @else if (featuredView.error) {
+      <div class="alert error">{{ featuredView.error }}</div>
+    } @else if (!featuredView.data.length) {
       <p class="muted">Sin productos destacados.</p>
     } @else {
       <div class="product-grid">
-        @for (item of featured.data; track item.id) {
+        @for (item of featuredView.data; track item.id) {
           <a class="card product" [routerLink]="['/product', item.id]">
             <img
               [ngSrc]="item.thumbnail || item.images?.[0] || fallbackImage"
@@ -62,10 +63,10 @@
 
   <section class="catalog">
     <h2>Todos los productos</h2>
-    @if (catalog.loading) {
+    @if (catalogView.loading) {
       <p>Cargando productos...</p>
-    } @else if (catalog.error) {
-      <div class="alert error">{{ catalog.error }}</div>
+    } @else if (catalogView.error) {
+      <div class="alert error">{{ catalogView.error }}</div>
     } @else if (!catalogItems().length) {
       <p class="muted">Aún no hay productos en el listado.</p>
     } @else {

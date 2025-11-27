@@ -1,0 +1,750 @@
+{
+  "account": [
+    {
+      "id": "a1",
+      "username": "admin1",
+      "password": "admin123",
+      "role": "admin",
+      "status": "active",
+      "email": "admin1@mail.com"
+    },
+    {
+      "id": "s2",
+      "username": "seller2",
+      "password": "seller123",
+      "role": "user-seller",
+      "status": "active",
+      "email": "seller2@mail.com"
+    },
+    {
+      "id": "u1",
+      "username": "ana",
+      "password": "ana123",
+      "role": "user-seller",
+      "status": "active",
+      "email": "ana@mail.com",
+      "firstname": "Ana",
+      "lastname": "Romero",
+      "birth": "1998-02-27"
+    },
+    {
+      "id": "u2",
+      "username": "luis",
+      "password": "luis123",
+      "role": "user",
+      "status": "active",
+      "email": "luis@mail.com"
+    },
+    {
+      "id": "s1",
+      "username": "seller1",
+      "password": "seller123",
+      "role": "user-seller",
+      "status": "active",
+      "email": "seller1@mail.com"
+    },
+    {
+      "id": "b1",
+      "username": "biz1",
+      "password": "biz123",
+      "role": "business",
+      "status": "active",
+      "email": "biz1@mail.com"
+    }
+  ],
+  "banned": [
+    {
+      "id": "ban1",
+      "username": "bannedUser",
+      "role": "user",
+      "status": "banned",
+      "email": "ban@mail.com"
+    }
+  ],
+  "product": [
+    {
+      "id": "p01",
+      "title": "Notebook Pro 15",
+      "description": "Laptop 15\" i7, 16GB RAM, 512GB SSD",
+      "category": "electronic",
+      "price": 1250,
+      "discountPercentage": 10,
+      "stock": 14,
+      "brand": "TechCore",
+      "tags": [
+        "laptop",
+        "work"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/9/4/94n14pr3200.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p02",
+      "title": "Smartphone Nova X",
+      "description": "Pantalla 6.5\", 128GB, 5G",
+      "category": "electronic",
+      "price": 799,
+      "discountPercentage": 5,
+      "stock": 20,
+      "brand": "Nova",
+      "tags": [
+        "phone",
+        "5g"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/e16223670af7ae8877a6c2db5c335df1/9/1/91pb120000ar_nm_1.png",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p03",
+      "title": "Auriculares ANC",
+      "description": "Over-ear con cancelación activa de ruido",
+      "category": "electronic",
+      "price": 199,
+      "discountPercentage": 15,
+      "stock": 35,
+      "brand": "SoundLab",
+      "tags": [
+        "audio",
+        "anc"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/e16223670af7ae8877a6c2db5c335df1/2/0/2024_Guitar_Basic-Pack_Green-Banana_Case-Open-Top_1.png",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p04",
+      "title": "Monitor 27\" QHD",
+      "description": "Panel IPS 144Hz con HDR",
+      "category": "electronic",
+      "price": 420,
+      "discountPercentage": 12,
+      "stock": 12,
+      "brand": "ViewMax",
+      "tags": [
+        "monitor",
+        "gaming"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/wysiwyg/NBXGM27180_5.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p05",
+      "title": "Teclado Mecánico RGB",
+      "description": "Switches rojos, formato tenkeyless",
+      "category": "electronic",
+      "price": 95,
+      "discountPercentage": 0,
+      "stock": 40,
+      "brand": "KeyForge",
+      "tags": [
+        "peripheral",
+        "gaming"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/n/b/nbx_pop_digital_1200x922_mesa_de_trabajo_1_copia_2_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p06",
+      "title": "Mouse Inalámbrico",
+      "description": "Sensor 26K DPI, 70h batería",
+      "category": "electronic",
+      "price": 85,
+      "discountPercentage": 0,
+      "stock": 50,
+      "brand": "Swift",
+      "tags": [
+        "mouse",
+        "wireless"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/n/b/nbx_pop_digital_1200x922_mesa_de_trabajo_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p07",
+      "title": "Parlante Bluetooth",
+      "description": "Portátil, 24h de batería, IPX7",
+      "category": "electronic",
+      "price": 110,
+      "discountPercentage": 8,
+      "stock": 25,
+      "brand": "Boom",
+      "tags": [
+        "audio",
+        "portable"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/d/_/d_623797-mla96407619562_102025-o_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p08",
+      "title": "Tablet 11\"",
+      "description": "OLED 120Hz, 256GB, lápiz incluido",
+      "category": "electronic",
+      "price": 650,
+      "discountPercentage": 7,
+      "stock": 14,
+      "brand": "TabPro",
+      "tags": [
+        "tablet",
+        "oled"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/t/s/ts7a232_iafbso0001_1200x922.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p09",
+      "title": "Smartwatch Fit",
+      "description": "GPS, NFC, 10 días de batería",
+      "category": "electronic",
+      "price": 180,
+      "discountPercentage": 0,
+      "stock": 30,
+      "brand": "Pulse",
+      "tags": [
+        "wearable",
+        "fitness"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/s/2/s20swb_1_2_.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p11",
+      "title": "Zapatillas Running Pro",
+      "description": "Amortiguación ligera, suela antideslizante",
+      "category": "sports",
+      "price": 160,
+      "discountPercentage": 5,
+      "stock": 28,
+      "brand": "RunFast",
+      "tags": [
+        "running",
+        "shoes"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/5afb9a47ba07e10ab9228e5eb278ed39/F/D/FD5190-001_0_33.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p12",
+      "title": "Bicicleta MTB",
+      "description": "Cuadro aluminio, 29\", 12v",
+      "category": "sports",
+      "price": 890,
+      "discountPercentage": 0,
+      "stock": 6,
+      "brand": "TrailX",
+      "tags": [
+        "mtb",
+        "bike"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/T/-/T-5337024_1.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p13",
+      "title": "Casco Ciclismo",
+      "description": "Liviano, certificación CE",
+      "category": "sports",
+      "price": 75,
+      "discountPercentage": 0,
+      "stock": 40,
+      "brand": "SafeRide",
+      "tags": [
+        "helmet",
+        "bike"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/b/l/blc2227890031_1.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p14",
+      "title": "Guantes Gym",
+      "description": "Cuero, agarre reforzado",
+      "category": "sports",
+      "price": 25,
+      "discountPercentage": 0,
+      "stock": 60,
+      "brand": "Grip",
+      "tags": [
+        "gym",
+        "gloves"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/e/c/ecwglbsvs41mn010_1.jpg",
+      "ownerId": "s2",
+      "status": "active"
+    },
+    {
+      "id": "p16",
+      "title": "Remera DryFit",
+      "description": "Tela respirable, running",
+      "category": "sports",
+      "price": 30,
+      "discountPercentage": 0,
+      "stock": 80,
+      "brand": "AirFit",
+      "tags": [
+        "shirt",
+        "running"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/H/M/HM9698-010_1.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p17",
+      "title": "Short Training",
+      "description": "Bolsillos con cierre, secado rápido",
+      "category": "sports",
+      "price": 35,
+      "discountPercentage": 0,
+      "stock": 70,
+      "brand": "AirFit",
+      "tags": [
+        "short",
+        "training"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/J/L/JL6184_1.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p18",
+      "title": "Bolso Deportivo",
+      "description": "45L, impermeable",
+      "category": "sports",
+      "price": 55,
+      "discountPercentage": 5,
+      "stock": 50,
+      "brand": "Carry",
+      "tags": [
+        "bag",
+        "gym"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/S/3/S30050002-554_1.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p19",
+      "title": "Botella Térmica",
+      "description": "Acero, 1L, mantiene 24h frío",
+      "category": "sports",
+      "price": 28,
+      "discountPercentage": 0,
+      "stock": 100,
+      "brand": "Thermo",
+      "tags": [
+        "bottle",
+        "outdoor"
+      ],
+      "images": [],
+      "thumbnail": "https://www.runandbike.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/K/C/KC6412_1.jpg",
+      "ownerId": "s2"
+    },
+    {
+      "id": "p21",
+      "title": "Aspiradora Robot",
+      "description": "Mapeo láser, recarga automática",
+      "category": "home-appliance",
+      "price": 320,
+      "discountPercentage": 10,
+      "stock": 18,
+      "brand": "CleanBot",
+      "tags": [
+        "robot",
+        "vacuum"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/j/7/j7-15.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p22",
+      "title": "Lavarropas 8kg",
+      "description": "Carga frontal, eficiencia A+++",
+      "category": "home-appliance",
+      "price": 520,
+      "discountPercentage": 12,
+      "stock": 10,
+      "brand": "WashPro",
+      "tags": [
+        "laundry"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/2/_/2_38.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p23",
+      "title": "Heladera No Frost",
+      "description": "400L, dispensador de agua",
+      "category": "home-appliance",
+      "price": 780,
+      "discountPercentage": 8,
+      "stock": 7,
+      "brand": "Cooler",
+      "tags": [
+        "fridge"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/v/s/vs6_l_good_gm-l237pllb_gs66spp_pz_front_1.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p24",
+      "title": "Microondas Grill",
+      "description": "30L, 900W, menú rápido",
+      "category": "home-appliance",
+      "price": 180,
+      "discountPercentage": 5,
+      "stock": 25,
+      "brand": "HeatIt",
+      "tags": [
+        "kitchen"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/1/-/1-2.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p25",
+      "title": "Horno Eléctrico",
+      "description": "60L, convección",
+      "category": "home-appliance",
+      "price": 260,
+      "discountPercentage": 10,
+      "stock": 14,
+      "brand": "BakeMax",
+      "tags": [
+        "oven"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/h/g/hgsa1724uapi_1.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p26",
+      "title": "Cafetera Espresso",
+      "description": "19 bar, vaporizador",
+      "category": "home-appliance",
+      "price": 220,
+      "discountPercentage": 0,
+      "stock": 22,
+      "brand": "Barista",
+      "tags": [
+        "coffee"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/p/r/proyecto_nuevo_-_2025-10-13t095110.353.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p27",
+      "title": "Pava Eléctrica",
+      "description": "1.7L, corte automático",
+      "category": "home-appliance",
+      "price": 45,
+      "discountPercentage": 0,
+      "stock": 80,
+      "brand": "Boil",
+      "tags": [
+        "kettle"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/P/E/PEAT1351BP_1_1.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p28",
+      "title": "Licuadora Pro",
+      "description": "Vaso vidrio, 3 velocidades",
+      "category": "home-appliance",
+      "price": 95,
+      "discountPercentage": 5,
+      "stock": 55,
+      "brand": "Blend",
+      "tags": [
+        "blender"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/l/m/lmat8527rpp_iafbsm0000.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p29",
+      "title": "Plancha a Vapor",
+      "description": "2200W, suela cerámica",
+      "category": "home-appliance",
+      "price": 60,
+      "discountPercentage": 0,
+      "stock": 70,
+      "brand": "Smooth",
+      "tags": [
+        "iron"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/c/a/captura_de_pantalla_5485_.png",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p30",
+      "title": "Aire Acondicionado",
+      "description": "3500W frío/calor, inverter",
+      "category": "home-appliance",
+      "price": 820,
+      "discountPercentage": 15,
+      "stock": 9,
+      "brand": "CoolAir",
+      "tags": [
+        "ac"
+      ],
+      "images": [],
+      "thumbnail": "https://tiendanewsan.com.ar/media/catalog/product/cache/d530c2b6ab347a6ce50a30406b6e8f7f/k/h/kh_1_.jpg",
+      "ownerId": "b1",
+      "status": "active"
+    },
+    {
+      "id": "p31",
+      "title": "Campera Rompeviento",
+      "description": "Impermeable, packable",
+      "category": "fashion",
+      "price": 140,
+      "discountPercentage": 10,
+      "stock": 25,
+      "brand": "NorthPeak",
+      "tags": [
+        "jacket",
+        "outdoor"
+      ],
+      "images": [],
+      "thumbnail": "https://www.opensports.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/1/6/162347_1_2.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p32",
+      "title": "Buzo Hoodie",
+      "description": "Algodón orgánico, unisex",
+      "category": "fashion",
+      "price": 75,
+      "discountPercentage": 0,
+      "stock": 60,
+      "brand": "Urban",
+      "tags": [
+        "hoodie"
+      ],
+      "images": [],
+      "thumbnail": "https://www.opensports.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/B/-/B-4656115_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p35",
+      "title": "Remera Gráfica",
+      "description": "Algodón peinado, estampada",
+      "category": "fashion",
+      "price": 35,
+      "discountPercentage": 0,
+      "stock": 90,
+      "brand": "Street",
+      "tags": [
+        "tshirt"
+      ],
+      "images": [],
+      "thumbnail": "https://www.opensports.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/1/6/167001_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p37",
+      "title": "Pantalón",
+      "description": "Slim fit, beige",
+      "category": "fashion",
+      "price": 80,
+      "discountPercentage": 0,
+      "stock": 45,
+      "brand": "Urban",
+      "tags": [
+        "chino"
+      ],
+      "images": [],
+      "thumbnail": "https://www.opensports.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/J/N/JN3679_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    },
+    {
+      "id": "p38",
+      "title": "Zapatillas Urbanas",
+      "description": "Cuero sintético, suela alta",
+      "category": "fashion",
+      "price": 110,
+      "discountPercentage": 8,
+      "stock": 35,
+      "brand": "Step",
+      "tags": [
+        "sneaker"
+      ],
+      "images": [],
+      "thumbnail": "https://www.opensports.com.ar/media/catalog/product/cache/13f2762f70dade795124aae2788a0d51/J/R/JR1197_1.jpg",
+      "ownerId": "s1",
+      "status": "active"
+    }
+  ],
+  "cart": [
+    {
+      "id": "c2",
+      "userId": "u2",
+      "products": [
+        {
+          "productId": "p3",
+          "title": "Aspiradora",
+          "price": 300,
+          "amount": 1
+        }
+      ],
+      "updated": "2025-11-27T18:20:58.963Z"
+    },
+    {
+      "id": "c-ana",
+      "created": "2025-11-27T01:23:50.475Z",
+      "updated": "2025-11-27T01:28:43.771Z",
+      "products": [
+        {
+          "productId": "p01",
+          "title": "Notebook Pro 15",
+          "price": 1125,
+          "amount": 3
+        }
+      ],
+      "userId": "ana"
+    },
+    {
+      "id": "c-f544",
+      "created": "2025-11-27T15:07:56.274Z",
+      "updated": "2025-11-27T15:07:59.212Z",
+      "products": [
+        {
+          "productId": "p01",
+          "title": "Notebook Pro 15",
+          "price": 1125,
+          "amount": 3
+        }
+      ],
+      "userId": "f544"
+    },
+    {
+      "id": "c-u1",
+      "created": "2025-11-27T18:18:30.155Z",
+      "updated": "2025-11-27T18:51:00.768Z",
+      "products": [
+        {
+          "productId": "p02",
+          "title": "Smartphone Nova X",
+          "price": 759.05,
+          "amount": 1
+        },
+        {
+          "productId": "p03",
+          "title": "Auriculares ANC",
+          "price": 199,
+          "amount": 1
+        }
+      ],
+      "userId": "u1"
+    }
+  ],
+  "review": [
+    {
+      "productId": "p1",
+      "username": "ana",
+      "rating": 5,
+      "comment": "Excelente",
+      "date": "2024-10-01T00:00:00.000Z"
+    },
+    {
+      "productId": "p2",
+      "username": "luis",
+      "rating": 4,
+      "comment": "Cómodas",
+      "date": "2024-10-02T00:00:00.000Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "t1",
+      "userId": "u1",
+      "items": [
+        {
+          "productId": "p1",
+          "title": "Notebook Pro",
+          "price": 1200,
+          "amount": 1
+        }
+      ],
+      "total": 1200,
+      "status": "paid",
+      "created": "2024-10-03T00:00:00.000Z"
+    },
+    {
+      "id": "t2",
+      "userId": "u2",
+      "items": [
+        {
+          "productId": "p2",
+          "title": "Zapatillas Run",
+          "price": 150,
+          "amount": 1
+        },
+        {
+          "productId": "p3",
+          "title": "Aspiradora",
+          "price": 300,
+          "amount": 1
+        }
+      ],
+      "total": 450,
+      "status": "pending",
+      "created": "2024-10-04T00:00:00.000Z"
+    }
+  ],
+  "featured": [
+    {
+      "productId": "p1"
+    },
+    {
+      "productId": "p2"
+    },
+    {
+      "productId": "p3"
+    }
+  ]
+}
